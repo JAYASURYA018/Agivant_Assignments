@@ -21,7 +21,6 @@ public class DashboardService {
     }
 
     public DashboardStatsResponse getDashboardStats(Long employeeId) {
-        
         String employeeName = "Guest Employee";
         Employee emp = null;
         if (employeeId != null) {
