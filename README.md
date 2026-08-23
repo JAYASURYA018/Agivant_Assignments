@@ -26,7 +26,7 @@ ELM is structured into three main layers:
 ```
 
 ### Key Workflows:
-1. **Authentication**: Users log in on the login page. A `POST` request to the authentication endpoint checks the database for matching credentials and verifies the password. Once verified, the user session is started on the client side.
+1. **Authentication**: Users log in on the login page. A `POST` request to the authentication endpoint checks the database and generates a signed JWT (JSON Web Token) on success. The client saves this token and automatically injects it into the standard `Authorization: Bearer <token>` header for all subsequent API requests to secure sessions dynamically.
 2. **Leave Request**: Employees fill out the request on the leave form. The page dynamically displays the calculated leave days before submission. On submission, the backend checks for overlapping dates and registers the request as `PENDING`.
 3. **Manager Actions**: Managers see all employee requests in their dashboard view. They can approve or reject the requests directly. Employees can cancel their requests from their dashboard. Leave balances are recalculated automatically.
 
