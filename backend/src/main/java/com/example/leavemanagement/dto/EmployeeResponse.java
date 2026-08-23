@@ -12,6 +12,7 @@ public class EmployeeResponse {
     private String department;
     private String role;
     private LocalDateTime createdAt;
+    private String token;
 
     public EmployeeResponse() {}
 
@@ -63,4 +64,7 @@ public class EmployeeResponse {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
 }

@@ -17,12 +17,14 @@ class EmployeeServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
-    @InjectMocks
+    private final com.example.leavemanagement.config.JwtTokenProvider jwtTokenProvider = new com.example.leavemanagement.config.JwtTokenProvider();
+
     private EmployeeService employeeService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        employeeService = new EmployeeService(employeeRepository, jwtTokenProvider);
     }
 
     @Test
@@ -130,6 +132,7 @@ class EmployeeServiceTest {
         emp.setEmail("rahul.sharma@example.com");
         emp.setPassword(com.example.leavemanagement.util.PasswordUtil.hashPassword("password"));
         emp.setDepartment("Engineering");
+        emp.setRole("EMPLOYEE");
 
         when(employeeRepository.findByEmail("rahul.sharma@example.com")).thenReturn(Optional.of(emp));
 
@@ -138,6 +141,7 @@ class EmployeeServiceTest {
         assertNotNull(response);
         assertEquals(1L, response.getId());
         assertEquals("Rahul", response.getFirstName());
+        assertNotNull(response.getToken());
     }
 
     @Test

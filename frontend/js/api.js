@@ -9,6 +9,18 @@ async function apiRequest(endpoint, options = {}) {
         'Content-Type': 'application/json'
     };
 
+    const currentUserStr = localStorage.getItem('currentUser');
+    if (currentUserStr) {
+        try {
+            const currentUser = JSON.parse(currentUserStr);
+            if (currentUser && currentUser.token) {
+                defaultHeaders['Authorization'] = `Bearer ${currentUser.token}`;
+            }
+        } catch (e) {
+            console.error('Error parsing currentUser for Auth header:', e);
+        }
+    }
+
     const config = {
         method: options.method || 'GET',
         headers: {

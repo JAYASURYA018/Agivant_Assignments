@@ -13,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final com.example.leavemanagement.config.JwtTokenProvider jwtTokenProvider;
 
-    public EmployeeService(EmployeeRepository employeeRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, com.example.leavemanagement.config.JwtTokenProvider jwtTokenProvider) {
         this.employeeRepository = employeeRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Transactional
@@ -154,6 +156,9 @@ public class EmployeeService {
             throw new BusinessException("Invalid email or password.");
         }
 
-        return EmployeeResponse.fromEntity(emp);
+        EmployeeResponse response = EmployeeResponse.fromEntity(emp);
+        String token = jwtTokenProvider.generateToken(emp.getId(), emp.getEmail(), emp.getRole());
+        response.setToken(token);
+        return response;
     }
 }
