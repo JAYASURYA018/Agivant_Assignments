@@ -1,15 +1,28 @@
 package com.example.leavemanagement.service;
 
-import com.example.leavemanagement.dto.*;
-import com.example.leavemanagement.entity.*;
-import com.example.leavemanagement.enums.LeaveStatus;
-import com.example.leavemanagement.exception.*;
-import com.example.leavemanagement.repository.*;
-import java.time.*;
-import java.util.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.example.leavemanagement.dto.DayLeaveResponse;
+import com.example.leavemanagement.dto.EmployeeOnLeaveDto;
+import com.example.leavemanagement.dto.LeaveRequestDto;
+import com.example.leavemanagement.dto.LeaveResponse;
+import com.example.leavemanagement.entity.Employee;
+import com.example.leavemanagement.entity.Holiday;
+import com.example.leavemanagement.entity.LeaveRequest;
+import com.example.leavemanagement.enums.LeaveStatus;
+import com.example.leavemanagement.exception.BusinessException;
+import com.example.leavemanagement.exception.ResourceNotFoundException;
+import com.example.leavemanagement.repository.EmployeeRepository;
+import com.example.leavemanagement.repository.HolidayRepository;
+import com.example.leavemanagement.repository.LeaveRequestRepository;
 
 @Service
 public class LeaveRequestService {
@@ -26,41 +39,37 @@ public class LeaveRequestService {
 
     @Transactional
     public LeaveResponse createLeaveRequest(LeaveRequestDto requestDto) {
-        
+
         Employee employee = employeeRepository.findById(requestDto.getEmployeeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee with ID " + requestDto.getEmployeeId() + " not found."));
 
-        
         LocalDate startDate = requestDto.getStartDate();
         LocalDate endDate = requestDto.getEndDate();
-        
+
         if (startDate.isAfter(endDate)) {
             throw new BusinessException("Start date cannot be after end date.");
         }
 
-        
         List<LeaveRequest> existingRequests = leaveRequestRepository.findByEmployeeId(requestDto.getEmployeeId());
         for (LeaveRequest existing : existingRequests) {
             if (existing.getStatus() == LeaveStatus.APPROVED || existing.getStatus() == LeaveStatus.PENDING) {
-                
+
                 if (!startDate.isAfter(existing.getEndDate()) && !endDate.isBefore(existing.getStartDate())) {
-                    throw new BusinessException("Requested leave dates overlap with an existing leave request (" 
+                    throw new BusinessException("Requested leave dates overlap with an existing leave request ("
                             + existing.getStartDate() + " to " + existing.getEndDate() + ", Status: " + existing.getStatus() + ").");
                 }
             }
         }
 
-        
         int calculatedDays = calculateWorkingDays(startDate, endDate);
 
-        
         LeaveRequest leave = new LeaveRequest();
         leave.setEmployee(employee);
         leave.setLeaveType(requestDto.getLeaveType());
         leave.setStartDate(startDate);
         leave.setEndDate(endDate);
         leave.setNumberOfDays(calculatedDays);
-        leave.setStatus(LeaveStatus.PENDING); 
+        leave.setStatus(LeaveStatus.PENDING);
         leave.setReason(requestDto.getReason() != null ? requestDto.getReason().trim() : null);
 
         LeaveRequest saved = leaveRequestRepository.save(leave);
@@ -90,7 +99,7 @@ public class LeaveRequestService {
             throw new BusinessException("Cannot approve a cancelled leave request.");
         }
         if (req.getStatus() == LeaveStatus.APPROVED) {
-            return LeaveResponse.fromEntity(req); 
+            return LeaveResponse.fromEntity(req);
         }
 
         req.setStatus(LeaveStatus.APPROVED);
@@ -103,7 +112,6 @@ public class LeaveRequestService {
         LeaveRequest req = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Leave request with ID " + id + " not found."));
 
-        
         if (req.getStatus() == LeaveStatus.APPROVED) {
             throw new BusinessException("An approved leave request cannot be rejected.");
         }
@@ -112,7 +120,7 @@ public class LeaveRequestService {
         }
 
         if (req.getStatus() == LeaveStatus.REJECTED) {
-            return LeaveResponse.fromEntity(req); 
+            return LeaveResponse.fromEntity(req);
         }
 
         req.setStatus(LeaveStatus.REJECTED);
@@ -125,12 +133,11 @@ public class LeaveRequestService {
         LeaveRequest req = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Leave request with ID " + id + " not found."));
 
-        
         if (req.getStatus() == LeaveStatus.REJECTED) {
             throw new BusinessException("A rejected leave request cannot be cancelled.");
         }
         if (req.getStatus() == LeaveStatus.CANCELLED) {
-            return LeaveResponse.fromEntity(req); 
+            return LeaveResponse.fromEntity(req);
         }
 
         req.setStatus(LeaveStatus.CANCELLED);
@@ -142,7 +149,7 @@ public class LeaveRequestService {
         if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
             return 0;
         }
-        
+
         List<Holiday> holidays = holidayRepository.findAll();
         Set<LocalDate> holidayDates = holidays.stream()
                 .map(Holiday::getHolidayDate)
@@ -170,19 +177,19 @@ public class LeaveRequestService {
         while (!cur.isAfter(endDate)) {
             final LocalDate currentDate = cur;
             List<LeaveRequest> activeLeaves = allLeaves.stream()
-                .filter(req -> !currentDate.isBefore(req.getStartDate()) && !currentDate.isAfter(req.getEndDate()))
-                .collect(Collectors.toList());
-            
+                    .filter(req -> !currentDate.isBefore(req.getStartDate()) && !currentDate.isAfter(req.getEndDate()))
+                    .collect(Collectors.toList());
+
             List<EmployeeOnLeaveDto> emps = activeLeaves.stream()
-                .map(req -> new EmployeeOnLeaveDto(
+                    .map(req -> new EmployeeOnLeaveDto(
                     req.getEmployee().getId(),
                     req.getEmployee().getFirstName() + " " + req.getEmployee().getLastName(),
                     req.getEmployee().getDepartment(),
                     req.getLeaveType().toString(),
                     req.getReason()
-                ))
-                .collect(Collectors.toList());
-                
+            ))
+                    .collect(Collectors.toList());
+
             result.add(new DayLeaveResponse(currentDate, emps.size(), emps));
             cur = cur.plusDays(1);
         }

@@ -56,13 +56,11 @@ public class DashboardService {
         if (employeeId != null) {
             List<LeaveRequest> requests = leaveRequestRepository.findByEmployeeId(employeeId);
             
-            
             int startYear = currentYear;
             if (emp != null && emp.getCreatedAt() != null) {
                 startYear = emp.getCreatedAt().getYear();
             }
 
-            
             double carriedForwardEL = 0.0;
             for (int yr = startYear; yr < currentYear; yr++) {
                 double elEarnedInYr = 12 * 1.25; 
@@ -78,7 +76,6 @@ public class DashboardService {
                 carriedForwardEL = Math.max(0, carriedForwardEL + elEarnedInYr - elTakenInYr);
             }
 
-            
             for (LeaveRequest req : requests) {
                 if (req.getStatus() == LeaveStatus.APPROVED) {
                     int reqYear = req.getStartDate().getYear();
@@ -96,7 +93,6 @@ public class DashboardService {
 
             int currentMonth = LocalDate.now().getMonthValue();
             
-            
             clAvailable = Math.max(0, (currentMonth * 1.0) - clBooked);
             slAvailable = Math.max(0, 5.0 - slBooked);
             elAvailable = Math.max(0, carriedForwardEL + (currentMonth * 1.25) - elBooked);
@@ -107,7 +103,7 @@ public class DashboardService {
                 .totalEmployees(totalEmployees)
                 .pendingApprovals(pendingApprovals)
                 .leaveBookedThisYear(leaveBookedThisYear)
-                .absentToday(0) 
+                .absentToday(0)
                 .casualLeaveAvailable(clAvailable)
                 .casualLeaveBooked(clBooked)
                 .sickLeaveAvailable(slAvailable)
@@ -167,9 +163,12 @@ public class DashboardService {
     public List<LeaveTypeReportResponse> getFrequentTypeReport() {
         var allRequests = leaveRequestRepository.findAll();
 
-        int clCount = 0; double clDays = 0;
-        int slCount = 0; double slDays = 0;
-        int elCount = 0; double elDays = 0;
+        int clCount = 0;
+        double clDays = 0;
+        int slCount = 0;
+        double slDays = 0;
+        int elCount = 0;
+        double elDays = 0;
 
         for (var r : allRequests) {
             switch (r.getLeaveType()) {
@@ -194,13 +193,15 @@ public class DashboardService {
         boolean elWinner = elCount == maxCount && maxCount > 0;
 
         if (maxCount == 0) {
-            clWinner = false; slWinner = false; elWinner = false;
+            clWinner = false;
+            slWinner = false;
+            elWinner = false;
         }
 
         return Arrays.asList(
-            new LeaveTypeReportResponse("CL", "Casual Leave", clCount, clDays, clWinner),
-            new LeaveTypeReportResponse("SL", "Sick Leave", slCount, slDays, slWinner),
-            new LeaveTypeReportResponse("EL", "Earned Leave", elCount, elDays, elWinner)
+                new LeaveTypeReportResponse("CL", "Casual Leave", clCount, clDays, clWinner),
+                new LeaveTypeReportResponse("SL", "Sick Leave", slCount, slDays, slWinner),
+                new LeaveTypeReportResponse("EL", "Earned Leave", elCount, elDays, elWinner)
         );
     }
 }
