@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Leave Management System - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+    
+    <header class="top-navbar">
+        <div class="nav-links">
+            <div class="elm-logo-header">ELM</div>
+            <div class="nav-item active">My Data</div>
+            <div class="nav-item" onclick="window.location.href='pages/employees.html'">Team</div>
+            <div class="nav-item" onclick="window.location.href='pages/holidays.html'">Holidays</div>
+        </div>
+        <div class="nav-actions">
+            
+            <button class="action-btn-circle" title="Search" id="nav-search-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+            
+            <button class="action-btn-circle" title="Notifications" id="nav-bell-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            </button>
+            
+            <div class="profile-container">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="User Profile" class="avatar-img" id="avatar-img">
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <div class="dropdown-user-name" id="dropdown-user-name">Guest Employee</div>
+                    <div class="dropdown-user-email" id="dropdown-user-email">guest@example.com</div>
+                    <hr class="dropdown-divider">
+                    <button class="dropdown-logout-btn" id="dropdown-logout-btn">Sign Out</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    
+    <nav class="sub-navbar">
+        <div class="sub-item active" id="tab-leave-summary">Leave Summary</div>
+        <div class="sub-item" id="tab-leave-requests">Leave Requests</div>
+    </nav>
+
+    
+    <main class="main-content">
+        
+        
+        <section class="filter-strip">
+            
+            <div class="stats-summary">
+                Leave booked this year : <strong id="booked-count">0</strong> | Absent : <strong id="absent-count">0</strong>
+            </div>
+
+            
+            <div class="action-group">
+                
+                <button class="apply-leave-btn" id="apply-leave-action-btn" onclick="window.location.href='pages/leave.html'">Apply Leave</button>
+            </div>
+        </section>
+
+        
+        <div id="leave-summary-view">
+            
+            <section class="cards-grid">
+                
+                
+                <div class="leave-card">
+                    <h3 class="card-title">Casual Leave (CL)</h3>
+                    <div class="card-icon-container icon-cl">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M4.93 4.93l1.41 1.41"></path><path d="M17.66 17.66l1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="M6.34 17.66l-1.41 1.41"></path><path d="M19.07 4.93l-1.41 1.41"></path></svg>
+                    </div>
+                    <div class="card-stat-row">
+                        <span class="stat-label">Available</span>
+                        <span class="stat-value available" id="cl-available">0</span>
+                    </div>
+                    <div class="card-stat-row">
+                        <span class="stat-label">Booked</span>
+                        <span class="stat-value">
+                            <span id="cl-booked">0</span>
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="leave-card">
+                    <h3 class="card-title">Sick Leave (SL)</h3>
+                    <div class="card-icon-container icon-sl">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                    </div>
+                    <div class="card-stat-row">
+                        <span class="stat-label">Available</span>
+                        <span class="stat-value available" id="sl-available">0</span>
+                    </div>
+                    <div class="card-stat-row">
+                        <span class="stat-label">Booked</span>
+                        <span class="stat-value">
+                            <span id="sl-booked">0</span>
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="leave-card">
+                    <h3 class="card-title">Earned Leave (EL)</h3>
+                    <div class="card-icon-container icon-el">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    </div>
+                    <div class="card-stat-row">
+                        <span class="stat-label">Available</span>
+                        <span class="stat-value available" id="el-available">0</span>
+                    </div>
+                    <div class="card-stat-row">
+                        <span class="stat-label">Booked</span>
+                        <span class="stat-value">
+                            <span id="el-booked">0</span>
+                        </span>
+                    </div>
+                </div>
+                
+            </section>
+
+            
+            <section class="holidays-panel">
+                <div class="panel-header">
+                    <span>Upcoming Leaves & Holidays</span>
+                    <span class="panel-header-arrow">▼</span>
+                </div>
+                
+                <div class="holiday-list-container" id="holiday-list">
+                    
+                    <div class="holiday-row" style="grid-template-columns: 1fr; text-align: center; color: var(--text-muted);">
+                        Loading upcoming holidays...
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        
+        <div id="leave-requests-view" style="display: none;">
+            <div class="list-panel" style="margin-top: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                    <h3 class="list-title" style="margin-bottom: 0;">Leave Requests Directory</h3>
+                    
+                    
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <select id="insight-select" class="form-control" style="width: 200px; height: 32px; padding: 0 4px; border: 1.5px solid #3b82f6; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; color: #1e3a8a; background-color: #f0f9ff; cursor: pointer;">
+                            <option value="standard">Standard Directory</option>
+                            <option value="greater-days">Requests > N Days (Search bar)</option>
+                            <option value="total-leaves">Total Leaves by Employee</option>
+                            <option value="no-leaves">Employees with No Leaves</option>
+                            <option value="frequent-type">Most Frequent Leave Type</option>
+                        </select>
+                        <input type="text" id="search-employee-input" class="form-control" placeholder="Search Employee..." style="width: 180px; height: 32px; padding: 0 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 13px;">
+                        <select id="filter-type-select" class="form-control" style="width: 110px; height: 32px; padding: 0 4px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 13px;">
+                            <option value="">All Types</option>
+                            <option value="CL">CL</option>
+                            <option value="SL">SL</option>
+                            <option value="EL">EL</option>
+                        </select>
+                        <select id="filter-status-select" class="form-control" style="width: 120px; height: 32px; padding: 0 4px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 13px;">
+                            <option value="">All Statuses</option>
+                            <option value="PENDING">PENDING</option>
+                            <option value="APPROVED">APPROVED</option>
+                            <option value="REJECTED">REJECTED</option>
+                            <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="employee-table" id="leave-requests-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Employee</th>
+                                <th>Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Days</th>
+                                <th>Status</th>
+                                <th>Reason</th>
+                                <th style="text-align: right; padding-right: 20px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leave-requests-list-body">
+                            <tr>
+                                <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                    Loading requests...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

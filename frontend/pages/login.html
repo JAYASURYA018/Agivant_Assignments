@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELM - Sign In</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="auth-logo"><span>E</span>LM</div>
+            <div class="auth-subtitle">Employee Leave Management System</div>
+        </div>
+
+        <div class="auth-body">
+            <form id="login-form" novalidate>
+                
+                <div class="auth-form-group">
+                    <label class="auth-label" for="login-email">Email Address</label>
+                    <input type="email" class="form-control" id="login-email" placeholder="name@company.com" required>
+                    <span class="error-text" id="login-email-error">Please enter a valid email address.</span>
+                </div>
+
+                
+                <div class="auth-form-group">
+                    <label class="auth-label" for="login-password">Password</label>
+                    <input type="password" class="form-control" id="login-password" placeholder="••••••••" required>
+                    <span class="error-text" id="login-password-error">Password is required.</span>
+                </div>
+
+                
+                <button type="button" class="auth-btn" id="btn-login-submit">Sign In</button>
+            </form>
+        </div>
+
+        <div class="auth-footer" style="font-size: 11px;">
+            Contact your Manager to provision an account.
+        </div>
+    </div>
+
+    
+    <script src="../js/api.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
+</body>
+</html>

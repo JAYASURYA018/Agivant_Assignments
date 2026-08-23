@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELM - Register</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="auth-logo"><span>E</span>LM</div>
+            <div class="auth-subtitle">Create your Employee Account</div>
+        </div>
+
+        <div class="auth-body">
+            <form id="register-form" novalidate>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                    <div class="auth-form-group" style="margin-bottom: 0;">
+                        <label class="auth-label" for="reg-first-name">First Name</label>
+                        <input type="text" class="form-control" id="reg-first-name" placeholder="Rahul" required>
+                        <span class="error-text" id="reg-first-name-error">Required.</span>
+                    </div>
+                    <div class="auth-form-group" style="margin-bottom: 0;">
+                        <label class="auth-label" for="reg-last-name">Last Name</label>
+                        <input type="text" class="form-control" id="reg-last-name" placeholder="Sharma" required>
+                        <span class="error-text" id="reg-last-name-error">Required.</span>
+                    </div>
+                </div>
+
+                
+                <div class="auth-form-group">
+                    <label class="auth-label" for="reg-email">Email Address</label>
+                    <input type="email" class="form-control" id="reg-email" placeholder="name@company.com" required>
+                    <span class="error-text" id="reg-email-error">Please enter a valid email address.</span>
+                </div>
+
+                
+                <div class="auth-form-group">
+                    <label class="auth-label" for="reg-department">Department</label>
+                    <select class="form-control" id="reg-department" required>
+                        <option value="">Select Department</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Finance">Finance</option>
+                    </select>
+                    <span class="error-text" id="reg-department-error">Please select your department.</span>
+                </div>
+
+                
+                <div class="auth-form-group">
+                    <label class="auth-label" for="reg-role">Role</label>
+                    <select class="form-control" id="reg-role" required>
+                        <option value="EMPLOYEE">Employee</option>
+                        <option value="MANAGER">Manager</option>
+                    </select>
+                    <span class="error-text" id="reg-role-error">Please select your role.</span>
+                </div>
+
+                
+                <div class="auth-form-group">
+                    <label class="auth-label" for="reg-password">Password</label>
+                    <input type="password" class="form-control" id="reg-password" placeholder="Min. 6 characters" required>
+                    <span class="error-text" id="reg-password-error">Password must be at least 6 characters.</span>
+                </div>
+
+                
+                <button type="button" class="auth-btn" id="btn-register-submit">Register</button>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            Already have an account? <a href="login.html" class="auth-link">Sign In here</a>
+        </div>
+    </div>
+
+    
+    <script src="../js/api.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/register.js"></script>
+</body>
+</html>
