@@ -26,9 +26,16 @@ ELM is structured into three main layers:
 ```
 
 ### Key Workflows:
-1. **Authentication**: Users log in on the frontend. A successful credentials match returns an employee profile JSON from the server, which is stored in the browser's `localStorage` to manage active sessions.
-2. **Leave Request**: An employee selects a date range. The backend dynamically calculates the net working days (excluding weekends and public holidays queried from the database). If the dates do not overlap with any existing requests, a new `PENDING` request is registered.
-3. **Manager Approval**: Managers view active requests and trigger approval or rejection endpoints. The database updates the request state instantly, which updates the employee's dashboard counters on reload.
+1. **Authentication**: Users log in on the login page. A `POST` request to the authentication endpoint checks the database for matching credentials and verifies the password. Once verified, the user session is started on the client side.
+2. **Leave Request**: Employees fill out the request on the leave form. The page dynamically displays the calculated leave days before submission. On submission, the backend checks for overlapping dates and registers the request as `PENDING`.
+3. **Manager Actions**: Managers see all employee requests in their dashboard view. They can approve or reject the requests directly. Employees can cancel their requests from their dashboard. Leave balances are recalculated automatically.
+
+### 🛡️ Edge Cases Covered:
+1. **Weekend Exclusion**: If an employee takes leave starting Friday and ending Monday, the system automatically excludes Saturday and Sunday. The calculated total leave days is **2**.
+2. **Holiday Exclusion**: If an employee takes leave from Wednesday to Friday, and Thursday is a public holiday, the holiday is excluded from the count. The calculated total leave days is **2**.
+3. **Overlapping Leaves**: The system blocks any overlapping leave requests (Pending or Approved) for the same employee, throwing a validation error on submission.
+4. **Status Guards**: An already approved leave cannot be rejected, and a rejected leave cannot be cancelled.
+5. **Account Creation & Security**: Employees cannot create accounts themselves. Only an Admin or Manager can create employee accounts via the directory. Employees can then log in and edit their profiles (including changing passwords) to prevent unauthorized access.
 
 ---
 
@@ -54,21 +61,20 @@ Here is the visual walkthrough of the application in sequence:
 ### 1. User Authentication & Profile
 | Login Screen | User Dashboard |
 |---|---|
-| ![LogIn page](Images/LogIn%20page.png) *The login page where users enter their email and password to log in.* | ![Dashboard](Images/Dashboard.png) *The home page showing leave balances like Casual, Sick, and Earned leaves.* |
+| ![LogIn page](Images/LogIn%20page.png) *The login page where users enter their email and password to log in. Note: Employees cannot create accounts. Only an Admin or Manager can create accounts, and then the employee can change their password to prevent unauthorized registrations.* | ![Dashboard](Images/Dashboard.png) *The home page showing leave balances like Casual, Sick, and Earned leaves.* |
 
 | Edit Profile | Public Holidays List |
 |---|---|
 | ![Edit Profile User](Images/Edit%20Profile%20User.png) *The profile page where employees can update their personal details.* | ![Holiday](Images/Holiday.png) *The holidays page displaying the list of public holidays.* |
 
 ### 2. Leave Application & History
-| Apply for Leave | Leave Apply Form |
+| Leave Apply Form | Apply for Leave |
 |---|---|
- ![Leave Apply form](Images/Leave%20Apply%20form.png) *The pop-up form where employees fill in leave dates and details.* |
-| ![Leave Request User](Images/Leave%20Request%20User.png) *The page where employees start applying for leave.* |
+| ![Leave Apply form](Images/Leave%20Apply%20form.png) *The pop-up form where employees fill in leave dates and details.* | ![Leave Request User](Images/Leave%20Request%20User.png) *The page where employees start applying for leave.* |
 
 | Leave History List |
 |---|
-| ![User View to Leave request](Images/User%20View%20to%20Leave%20request.png) *The page showing all leave requests submitted by the user and their current status.* |
+| ![User View to Leave request](Images/User%20View%20to%20Leave%20request.png) *The page showing all leave requests submitted by the user and their current status (showing 'PENDING' before a manager accepts it).* |
 
 ### 3. Team Calendar & Schedule
 | Weekly Absences Grid |
@@ -76,9 +82,13 @@ Here is the visual walkthrough of the application in sequence:
 | ![OnLeave Employees](Images/OnLeave%20Employees.png) *The calendar page showing which employees are on leave each day of the week.* |
 
 ### 4. Administrative & Manager Panel
-| Add Employee Dialog | Pending Requests Grid |
-|---|---|
-| ![Add Emp by Admin](Images/Add%20Emp%20by%20Admin.png) *The form used by managers to add new employee accounts.* | ![All Leave request to Admin](Images/All%20Leave%20request%20to%20Admin.png) *The admin page where managers see all pending leave requests.* |
+| Add Employee Dialog |
+|---|
+| ![Add Emp by Admin](Images/Add%20Emp%20by%20Admin.png) *The form used by managers to add new employee accounts.* |
+
+| Pending Requests Grid (Full Width View) |
+|---|
+| <img src="Images/All%20Leave%20request%20to%20Admin.png" width="100%" alt="All Leave request to Admin"> <br> *The admin page where managers see all pending leave requests.* |
 
 | Approval Actions | Recalculated Balances |
 |---|---|
@@ -184,8 +194,8 @@ Open `http://localhost:3000` in your web browser.
 ### 4. Default Credentials (Test Accounts)
 | Role | Email | Password |
 |---|---|---|
-| **Manager** | `anupriya.mohan@zylker.com` | `luffy` |
-| **Employee** | `liam.john@zylker.com` | `password123` |
+| **Manager** | `manager@gmail.com` | `Pass@123` |
+| **Employee** | `shailesh@gmail.com` | `Pass@123` |
 
 ---
 
