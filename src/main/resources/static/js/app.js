@@ -1656,6 +1656,17 @@ const App = {
         }
     },
 
+    generateNewIsbn() {
+        const randomDigits = Math.floor(1000000000 + Math.random() * 9000000000);
+        const isbn = `978${randomDigits}`;
+        const input = document.getElementById('add-book-isbn');
+        if (input) {
+            input.value = isbn;
+            this.showToast('info', `Generated new ISBN: ${isbn}`);
+        }
+        return isbn;
+    },
+
     openAddBookModal(bookToEdit = null) {
         if (!this.state.currentUser) {
             this.showToast('info', 'Please sign in to publish books!');
@@ -1664,7 +1675,7 @@ const App = {
         }
 
         if (!this.isCurrentUserAuthor()) {
-            this.showToast('info', 'To publish and add books to BookBasket, please register as an Author first!');
+            this.showToast('info', 'To publish books to BookBasket, please register as an Author first!');
             this.openRegisterAuthorModal();
             return;
         }
@@ -1682,6 +1693,14 @@ const App = {
         const authSelect = document.getElementById('add-book-authors');
         const coverInp = document.getElementById('add-book-cover');
         const descInp = document.getElementById('add-book-desc');
+        const primaryAuthorDisplay = document.getElementById('publishing-author-display-block');
+        const primaryAuthorName = document.getElementById('publishing-author-name');
+        const primaryAuthorHidden = document.getElementById('add-book-primary-author-id');
+
+        // Ensure category options are populated
+        if (catSelect && this.state.categories.length > 0) {
+            catSelect.innerHTML = this.state.categories.map(c => `<option value="${c.id}">${this.escapeHtml(c.name)}</option>`).join('');
+        }
 
         if (bookToEdit) {
             if (modalTitle) modalTitle.textContent = "✏️ Edit Book Details";
@@ -1689,34 +1708,48 @@ const App = {
             if (hiddenId) hiddenId.value = bookToEdit.id;
             if (titleInp) titleInp.value = bookToEdit.title;
             if (isbnInp) isbnInp.value = bookToEdit.isbn;
-            if (yearInp) yearInp.value = bookToEdit.publicationYear || '';
+            if (yearInp) yearInp.value = bookToEdit.publicationYear || '2024';
             if (copiesInp) copiesInp.value = bookToEdit.totalCopies;
             if (catSelect && bookToEdit.category) catSelect.value = bookToEdit.category.id;
             if (coverInp) coverInp.value = bookToEdit.coverImageUrl || '';
             if (descInp) descInp.value = bookToEdit.description || '';
 
-            if (authSelect && bookToEdit.authors) {
-                const aIds = bookToEdit.authors.map(a => a.id);
-                Array.from(authSelect.options).forEach(opt => {
-                    opt.selected = aIds.includes(parseInt(opt.value));
-                });
+            if (primaryAuthorDisplay) primaryAuthorDisplay.style.display = 'none';
+
+            // Populate all authors for editing
+            if (authSelect) {
+                authSelect.innerHTML = this.state.authors.map(a => `<option value="${a.id}">${this.escapeHtml(a.name)}</option>`).join('');
+                if (bookToEdit.authors) {
+                    const aIds = bookToEdit.authors.map(a => a.id);
+                    Array.from(authSelect.options).forEach(opt => {
+                        opt.selected = aIds.includes(parseInt(opt.value));
+                    });
+                }
             }
         } else {
-            if (modalTitle) modalTitle.textContent = "➕ Add New Book to Library";
-            if (btnSubmit) btnSubmit.textContent = "Publish Book to Catalog";
+            if (modalTitle) modalTitle.textContent = "➕ Publish a Book to BookBasket";
+            if (btnSubmit) btnSubmit.textContent = "Publish Book to Catalog ✨";
             if (hiddenId) hiddenId.value = "";
             if (titleInp) titleInp.value = "";
-            if (isbnInp) isbnInp.value = "";
+            if (isbnInp) {
+                // Auto-generate fresh unique ISBN
+                const randomDigits = Math.floor(1000000000 + Math.random() * 9000000000);
+                isbnInp.value = `978${randomDigits}`;
+            }
             if (yearInp) yearInp.value = "2024";
             if (copiesInp) copiesInp.value = "5";
             if (coverInp) coverInp.value = "";
             if (descInp) descInp.value = "";
 
-            // Automatically pre-select the logged-in author!
-            if (authSelect && authorProfile) {
-                Array.from(authSelect.options).forEach(opt => {
-                    opt.selected = parseInt(opt.value) === authorProfile.id;
-                });
+            // Show primary verified author automatically
+            if (primaryAuthorDisplay) primaryAuthorDisplay.style.display = 'block';
+            if (primaryAuthorName && authorProfile) primaryAuthorName.textContent = authorProfile.name;
+            if (primaryAuthorHidden && authorProfile) primaryAuthorHidden.value = authorProfile.id;
+
+            // Populate other authors in co-author list
+            if (authSelect) {
+                const otherAuthors = this.state.authors.filter(a => !authorProfile || a.id !== authorProfile.id);
+                authSelect.innerHTML = otherAuthors.map(a => `<option value="${a.id}">${this.escapeHtml(a.name)}</option>`).join('');
             }
         }
 
@@ -1734,55 +1767,68 @@ const App = {
         const cover = document.getElementById('add-book-cover')?.value.trim();
         const desc = document.getElementById('add-book-desc')?.value.trim();
 
-        const selectAuth = document.getElementById('add-book-authors');
-        const selectedAuthorIds = Array.from(selectAuth?.selectedOptions || []).map(o => parseInt(o.value));
+        if (!title || !isbn || !total || !catId) {
+            this.showToast('error', 'Please fill in all required fields (Title, ISBN, Copies, Category).');
+            return;
+        }
 
-        if (selectedAuthorIds.length === 0) {
-            this.showToast('error', 'Please select at least one author.');
+        let authorIds = [];
+        if (editId) {
+            const selectAuth = document.getElementById('add-book-authors');
+            authorIds = Array.from(selectAuth?.selectedOptions || []).map(o => parseInt(o.value));
+        } else {
+            const primaryAuthorId = parseInt(document.getElementById('add-book-primary-author-id')?.value);
+            const selectAuth = document.getElementById('add-book-authors');
+            const coAuthorIds = Array.from(selectAuth?.selectedOptions || []).map(o => parseInt(o.value));
+            
+            const authorProfile = this.getLoggedAuthorProfile();
+            const mainId = primaryAuthorId || (authorProfile ? authorProfile.id : null);
+            
+            authorIds = Array.from(new Set([mainId, ...coAuthorIds].filter(Boolean)));
+        }
+
+        if (authorIds.length === 0) {
+            this.showToast('error', 'Author is missing. Please make sure you are registered as an author.');
             return;
         }
 
         const payload = {
             title,
             isbn,
-            publicationYear: year ? parseInt(year) : null,
+            publicationYear: year ? parseInt(year) : 2024,
             totalCopies: parseInt(total),
             availableCopies: parseInt(total),
             categoryId: parseInt(catId),
-            authorIds: selectedAuthorIds,
+            authorIds: authorIds,
             coverImageUrl: cover || null,
             description: desc || null
         };
 
         try {
-            let res;
-            if (editId) {
-                res = await fetch(`${API_BASE}/books/${editId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-            } else {
-                res = await fetch(`${API_BASE}/books`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-            }
+            const url = editId ? `${API_BASE}/books/${editId}` : `${API_BASE}/books`;
+            const method = editId ? 'PUT' : 'POST';
 
-            const json = await res.json();
-            if (json.success) {
-                this.showToast('success', editId ? `"${title}" updated successfully! ✨` : `"${title}" added to catalog! ✨`);
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const json = await res.json().catch(() => null);
+
+            if (res.ok && json && json.success) {
+                this.showToast('success', editId ? `"${title}" updated successfully! ✨` : `🎉 "${title}" published to BookBasket catalog!`);
                 this.closeModals();
                 await this.filterAndRenderBooks();
                 await this.loadStats();
                 await this.loadCategories();
                 await this.loadAuthors();
             } else {
-                this.showToast('error', json.message || 'Failed to save book.');
+                const errMsg = (json && (json.message || json.error)) || `Server returned error (${res.status})`;
+                this.showToast('error', errMsg);
             }
         } catch (err) {
-            this.showToast('error', 'Server error while saving book.');
+            this.showToast('error', 'Network/Server connection error while saving book.');
         }
     },
 
