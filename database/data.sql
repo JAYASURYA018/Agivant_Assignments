@@ -10,7 +10,14 @@ INSERT INTO employee (employee_id, first_name, last_name, email, password, depar
 ('E106', 'Jen', 'Adams', 'jen.adams@zylker.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', NULL, 'EMPLOYEE'),
 ('E107', 'Amelia', 'Brandon', 'amelia.br@zylker.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', NULL, 'EMPLOYEE'),
 ('E108', 'Tina', 'Francis', 'tina.francis@zylker.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', NULL, 'EMPLOYEE'),
-('E109', 'Tayloenne', 'Tayloenne', 'tayloenne@gmail.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', 'Media', 'EMPLOYEE');
+('E109', 'Tayloenne', 'Tayloenne', 'tayloenne@gmail.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', 'Media', 'EMPLOYEE'),
+('E110', 'Admin', '1', 'admin@gmail.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', 'Engineering', 'MANAGER'),
+('E111', 'Tejas', 'Jadhav', 'tejas@gmail.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', 'HR', 'EMPLOYEE'),
+('E112', 'Shailesh', 'Sontakke', 'shailesh@gmail.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', 'Engineering', 'EMPLOYEE'),
+('E113', 'Manager', 'Main', 'manager@gmail.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', 'Engineering', 'MANAGER'),
+('E114', 'Avinash', 'Pande', 'avinash@gmail.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', 'Operations', 'EMPLOYEE'),
+('E115', 'Bruce', 'Wayne', 'bruce@waynecorp.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', 'Operations', 'EMPLOYEE'),
+('E116', 'Asit', 'Mohod', 'asit@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qCOuy5ymDFGCo0egN9dB7m982gFMsn34Py', 'Engineering', 'EMPLOYEE');
 
 -- Insert Holidays (Matching the dashboard screenshot for year 2026)
 INSERT INTO holiday (name, holiday_date, description, holiday_type) VALUES
