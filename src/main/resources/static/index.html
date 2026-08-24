@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookBasket — Pick a book, find a world</title>
+    <meta name="description" content="BookBasket — Rent & borrow books online. Pick a book, find a world.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Main Navigation Header -->
+    <header class="navbar-main">
+        <div class="nav-inner">
+            <!-- Left: 3-Dash Menu + Brand Logo -->
+            <div class="nav-left">
+                <button class="btn-hamburger" id="btn-toggle-menu" aria-label="Toggle navigation menu" title="Open Menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                
+                <a href="#" class="brand-link" onclick="App.navigateTo('home'); return false;">
+                    <span class="brand-logo-icon">🧺</span>
+                    <div class="brand-text-group">
+                        <span class="brand-title">Book<span class="text-accent">Basket</span></span>
+                        <span class="brand-sub">Online Library</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Center: Search Bar in Header -->
+            <div class="nav-center-search">
+                <div class="search-box-input-wrap">
+                    <input type="text" id="header-search-input" class="header-search-field" placeholder="Search books by title, author, genre, or ISBN...">
+                    <button class="btn-header-search" onclick="App.triggerSearch()" aria-label="Search">
+                        <span>🔍</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Nav Links & Login / Profile -->
+            <div class="nav-right">
+                <nav class="desktop-nav-links">
+                    <a href="#genres-section" class="nav-link" onclick="App.scrollToSection('genres-section'); return false;">Genres</a>
+                    <a href="#" class="nav-link" onclick="App.navigateTo('sky'); return false;">✨ Ask Sky AI</a>
+                    <a href="#" class="nav-link" onclick="App.navigateTo('my-books'); return false;">📖 My Shelf</a>
+                    <span id="desktop-author-slot">
+                        <a href="#" class="nav-link" style="color: var(--primary-red); font-weight: 700;" onclick="App.handleAuthorNavClick(); return false;">✍️ Become an Author</a>
+                    </span>
+                </nav>
+
+                <!-- Auth Area -->
+                <div class="nav-auth-container" id="nav-auth-container">
+                    <!-- Logged Out State: Login Button -->
+                    <button class="btn-auth-login" id="btn-nav-login" onclick="App.openLoginModal()">
+                        <span>👤</span>
+                        <span>Login</span>
+                    </button>
+
+                    <!-- Logged In State: Profile Pill -->
+                    <div class="user-profile-badge" id="nav-profile-pill" style="display: none;" onclick="App.toggleProfileDropdown()">
+                        <div class="avatar-circle" id="nav-user-avatar">LN</div>
+                        <div class="user-info-text">
+                            <span class="user-name" id="nav-user-name">Likitha Nambari</span>
+                            <span class="user-role-tag" id="nav-user-role-tag">🟢 Active Reader</span>
+                        </div>
+                        <span class="arrow-down">▾</span>
+                    </div>
+
+                    <!-- Profile Dropdown Menu -->
+                    <div class="profile-dropdown-popup" id="profile-dropdown-popup">
+                        <div class="profile-drop-header">
+                            <strong id="dropdown-user-name">Likitha Nambari</strong>
+                            <span id="dropdown-user-email">likitha@example.com</span>
+                        </div>
+                        <hr class="drop-divider">
+                        <button class="drop-item" onclick="App.navigateTo('my-books'); App.toggleProfileDropdown(false);">
+                            📚 My Borrowed Shelf & History
+                        </button>
+                        <button class="drop-item" id="btn-profile-become-author" style="color: #b91c1c; font-weight: 700;" onclick="App.openRegisterAuthorModal(); App.toggleProfileDropdown(false);">
+                            ✍️ Register as an Author
+                        </button>
+                        <button class="drop-item" id="btn-profile-add-book" style="display: none; color: #047857; font-weight: 700;" onclick="App.openAddBookModal(); App.toggleProfileDropdown(false);">
+                            ➕ Publish / Add a Book
+                        </button>
+                        <button class="drop-item" onclick="App.openSwitchAccountModal(); App.toggleProfileDropdown(false);">
+                            🔄 Switch Account / Sign In
+                        </button>
+                        <hr class="drop-divider">
+                        <button class="drop-item logout-btn" onclick="App.logout()">
+                            🚪 Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Slide-out Side Drawer Menu -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="App.toggleDrawer(false)"></div>
+    <aside class="sidebar-drawer" id="sidebar-drawer">
+        <div class="drawer-top">
+            <div class="drawer-logo">
+                <span>🧺</span>
+                <span>BookBasket</span>
+            </div>
+            <button class="btn-close-drawer" onclick="App.toggleDrawer(false)">&times;</button>
+        </div>
+
+        <ul class="drawer-links-list">
+            <li class="drawer-item active" onclick="App.navigateTo('home'); App.toggleDrawer(false);">
+                <span class="d-icon">🏠</span>
+                <span>Home & Browse Catalog</span>
+            </li>
+            <li class="drawer-item" onclick="App.navigateTo('sky'); App.toggleDrawer(false);">
+                <span class="d-icon">🪄</span>
+                <span>Ask Sky AI Recommendations</span>
+            </li>
+            <li class="drawer-item" onclick="App.navigateTo('my-books'); App.toggleDrawer(false);">
+                <span class="d-icon">📚</span>
+                <span>My Borrowed Shelf</span>
+            </li>
+            <li class="drawer-item" onclick="App.navigateTo('insights'); App.toggleDrawer(false);">
+                <span class="d-icon">📊</span>
+                <span>Library Insights & Stats</span>
+            </li>
+        </ul>
+
+        <div class="drawer-bottom-card" id="drawer-author-card">
+            <div id="drawer-become-author-box" style="background: #fdf2f8; border: 1px dashed #f472b6; border-radius: 8px; padding: 12px; margin-bottom: 10px; text-align: center;">
+                <span style="font-size: 1.25rem;">✍️</span>
+                <h4 style="margin: 4px 0 2px 0; font-size: 0.875rem; color: #831843;">Wanna Become an Author?</h4>
+                <p style="margin: 0 0 8px 0; font-size: 0.75rem; color: #9d174d;">Share your stories & publish books for BookBasket readers.</p>
+                <button class="btn-action-solid red" style="font-size: 0.75rem; padding: 5px 12px; width: 100%;" onclick="App.openRegisterAuthorModal(); App.toggleDrawer(false);">
+                    Register as Author ✨
+                </button>
+            </div>
+            <div id="drawer-add-book-box" style="display: none;">
+                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; font-size: 0.75rem; color: #065f46; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                    <span>🌟</span> <span id="drawer-author-name-badge">Verified Author</span>
+                </div>
+                <button class="btn-add-book-outline" onclick="App.openAddBookModal(); App.toggleDrawer(false);">
+                    ➕ Publish / Add a Book
+                </button>
+            </div>
+            <p class="drawer-quote-text" style="margin-top: 8px;">"Pick a book, find a world"</p>
+        </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT VIEWPORT ================= -->
+    <div class="main-content-container">
+
+        <!-- ================= VIEW 1: HOME & STOREFRONT ================= -->
+        <main class="view-section active" id="view-home">
+            
+            <!-- Hero Carousel / Banner with Vintage Books Strip -->
+            <section class="hero-rental-banner">
+                <div class="hero-banner-card">
+                    <div class="hero-text-content">
+                        <span class="hero-badge">📚 BookBasket Online Library — Curated Collections</span>
+                        <h1 class="hero-headline">Rent Books Online: Your Gateway to a <span class="highlight-red">World of Stories</span></h1>
+                        <p class="hero-tagline">“Pick a book, find a world”</p>
+                        <p class="hero-description">Explore our curated collection of classic and contemporary bestsellers across rich genres. Borrow anytime with instant online previews and home delivery.</p>
+                        
+                        <div class="hero-action-buttons">
+                            <button class="btn-hero-primary" id="btn-hero-action" onclick="App.handleHeroAction()">Sign in to Read ➔</button>
+                            <button class="btn-hero-secondary" onclick="App.navigateTo('sky')">🪄 Ask Sky AI</button>
+                        </div>
+                    </div>
+                    <div class="hero-image-content">
+                        <img src="images/vintage-books-strip.jpg" alt="Vintage Books" class="hero-book-stack-img" onerror="this.src='images/vintage-books.jpg'">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Currently Borrowed Row (Visible when user is logged in & has loans) -->
+            <section class="user-active-shelf-section" id="user-shelf-section" style="display: none;">
+                <div class="section-title-bar">
+                    <div class="title-with-badge">
+                        <span class="sec-icon">📖</span>
+                        <h2>My Currently Borrowed Shelf</h2>
+                        <span class="pill-counter" id="user-shelf-badge" style="display: none;"></span>
+                    </div>
+                    <div class="shelf-scroll-controls">
+                        <button class="btn-scroll-circle" onclick="App.scrollShelf(-300)" aria-label="Previous">‹</button>
+                        <button class="btn-scroll-circle" onclick="App.scrollShelf(300)" aria-label="Next">›</button>
+                    </div>
+                </div>
+                <div class="horizontal-shelf-row" id="user-shelf-cards-container">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </section>
+
+            <!-- Book / Author View Toggle Bar -->
+            <div class="toggle-view-center-bar">
+                <div class="pill-tab-toggle">
+                    <button class="tab-toggle-btn active" id="tab-books" onclick="App.switchTab('books')">Books Catalog</button>
+                    <button class="tab-toggle-btn" id="tab-authors" onclick="App.switchTab('authors')">Authors</button>
+                </div>
+            </div>
+
+            <!-- Promotion Strip: "The More You Read The Less You Pay" -->
+            <section class="promo-strip-card">
+                <div class="promo-content-left">
+                    <h3 class="promo-title">The More You Read <br><span class="text-red">The Less You Pay</span></h3>
+                    <p class="promo-text">Explore our flexible library reading plans and enjoy unlimited borrowing.</p>
+                    <button class="btn-promo-action" onclick="App.scrollToSection('genres-section')">Browse Catalog ➔</button>
+                </div>
+                <div class="promo-img-right">
+                    <div class="vintage-strip-thumbnail">
+                        <img src="images/vintage-books-strip.jpg" alt="Vintage Books" class="promo-strip-img" onerror="this.src='images/vintage-books.jpg'">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Genres Showcase (Horizontal Scroll Bar) -->
+            <section class="genres-showcase-section" id="genres-section">
+                <div class="section-title-bar center-title">
+                    <h2 class="section-main-heading">Explore by Genres</h2>
+                </div>
+                
+                <div class="genres-row-container">
+                    <button class="genre-scroll-arrow left" onclick="App.scrollGenres(-280)" aria-label="Scroll left">‹</button>
+                    <div class="genres-icons-track" id="genres-icons-track">
+                        <div class="genre-bubble active" data-cat-id="" onclick="App.selectGenre('')">
+                            <div class="genre-icon-circle">📚</div>
+                            <span class="genre-label">All Genres</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="1" onclick="App.selectGenre('1')">
+                            <div class="genre-icon-circle">📖</div>
+                            <span class="genre-label">Fiction</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="2" onclick="App.selectGenre('2')">
+                            <div class="genre-icon-circle">🔍</div>
+                            <span class="genre-label">Mystery</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="3" onclick="App.selectGenre('3')">
+                            <div class="genre-icon-circle">⚡</div>
+                            <span class="genre-label">Thriller</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="4" onclick="App.selectGenre('4')">
+                            <div class="genre-icon-circle">💖</div>
+                            <span class="genre-label">Romance</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="5" onclick="App.selectGenre('5')">
+                            <div class="genre-icon-circle">✨</div>
+                            <span class="genre-label">Fantasy</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="6" onclick="App.selectGenre('6')">
+                            <div class="genre-icon-circle">🚀</div>
+                            <span class="genre-label">Sci-Fi</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="7" onclick="App.selectGenre('7')">
+                            <div class="genre-icon-circle">👻</div>
+                            <span class="genre-label">Horror</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="8" onclick="App.selectGenre('8')">
+                            <div class="genre-icon-circle">🏛️</div>
+                            <span class="genre-label">Historical</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="9" onclick="App.selectGenre('9')">
+                            <div class="genre-icon-circle">🧭</div>
+                            <span class="genre-label">Adventure</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="10" onclick="App.selectGenre('10')">
+                            <div class="genre-icon-circle">👤</div>
+                            <span class="genre-label">Biography</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="11" onclick="App.selectGenre('11')">
+                            <div class="genre-icon-circle">✍️</div>
+                            <span class="genre-label">Autobiography</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="12" onclick="App.selectGenre('12')">
+                            <div class="genre-icon-circle">🌱</div>
+                            <span class="genre-label">Self-Help</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="13" onclick="App.selectGenre('13')">
+                            <div class="genre-icon-circle">🧠</div>
+                            <span class="genre-label">Psychology</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="14" onclick="App.selectGenre('14')">
+                            <div class="genre-icon-circle">📜</div>
+                            <span class="genre-label">Philosophy</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="15" onclick="App.selectGenre('15')">
+                            <div class="genre-icon-circle">💼</div>
+                            <span class="genre-label">Business</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="16" onclick="App.selectGenre('16')">
+                            <div class="genre-icon-circle">💻</div>
+                            <span class="genre-label">Technology</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="17" onclick="App.selectGenre('17')">
+                            <div class="genre-icon-circle">🎒</div>
+                            <span class="genre-label">Young Adult</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="18" onclick="App.selectGenre('18')">
+                            <div class="genre-icon-circle">🎨</div>
+                            <span class="genre-label">Children's</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="19" onclick="App.selectGenre('19')">
+                            <div class="genre-icon-circle">✒️</div>
+                            <span class="genre-label">Poetry</span>
+                        </div>
+                        <div class="genre-bubble" data-cat-id="20" onclick="App.selectGenre('20')">
+                            <div class="genre-icon-circle">👑</div>
+                            <span class="genre-label">Classics</span>
+                        </div>
+                    </div>
+                    <button class="genre-scroll-arrow right" onclick="App.scrollGenres(280)" aria-label="Scroll right">›</button>
+                </div>
+            </section>
+
+            <!-- Trending Books Section -->
+            <section class="book-category-section" id="section-trending">
+                <div class="section-title-bar">
+                    <div class="title-with-badge">
+                        <span class="sec-icon">🔥</span>
+                        <h2 id="books-section-heading">Books & Best Sellers</h2>
+                        <span class="pill-counter" id="books-count-badge" style="display: none;"></span>
+                    </div>
+                    <div class="category-filter-actions">
+                        <label class="check-avail-toggle">
+                            <input type="checkbox" id="chk-available-filter" onchange="App.handleAvailabilityFilter(this.checked)">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-txt">Available Now</span>
+                        </label>
+                        <select id="select-sort-options" class="select-sort-styled" onchange="App.handleSortChange(this.value)">
+                            <option value="title">Sort: Title (A-Z)</option>
+                            <option value="borrowCount" selected>Sort: Most Popular</option>
+                            <option value="recent">Sort: Newest Added</option>
+                            <option value="year">Sort: Release Year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Books Grid Container -->
+                <div class="books-display-grid" id="books-grid-main">
+                    <div class="loading-catalog-box">
+                        <div class="spinner-book"></div>
+                        <p>Loading books from the library shelves...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Authors Showcase (Hidden by default, shown when Authors tab clicked) -->
+            <section class="authors-showcase-section" id="section-authors" style="display: none;">
+                <!-- 1. All Authors List -->
+                <div id="authors-list-view">
+                    <div class="section-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <h2>Featured Authors in BookBasket (<span id="authors-count-badge">0</span> Authors)</h2>
+                        <button class="btn-action-solid red" style="font-size: 0.8125rem; padding: 6px 14px;" onclick="App.openRegisterAuthorModal()">
+                            ✍️ Register as an Author
+                        </button>
+                    </div>
+                    <div class="authors-grid" id="authors-grid-container">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- 2. Single Author Spotlight & Written Books -->
+                <div id="author-spotlight-view" style="display: none;">
+                    <div style="margin-bottom: 16px;">
+                        <button class="btn-hero-secondary" onclick="App.showAuthorsList()">← Back to All Authors</button>
+                    </div>
+                    <div class="author-spotlight-card" id="author-spotlight-header-card">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                    <div class="section-title-bar" style="margin-top: 24px;">
+                        <h2 id="author-books-heading">Books Written by Author</h2>
+                    </div>
+                    <div class="books-display-grid" id="author-books-grid">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ================= VIEW 2: SKY AI ASSISTANT ================= -->
+        <section class="view-section" id="view-sky">
+            <div class="sky-ai-container-card">
+                <div class="sky-header-banner">
+                    <div class="sky-avatar-large">🪄</div>
+                    <div>
+                        <h2>Sky AI — Smart Book Recommender</h2>
+                        <p>Tell Sky what topics, genres, or moods you want to explore, and receive smart instant picks!</p>
+                    </div>
+                </div>
+
+                <div class="sky-interaction-box">
+                    <div class="prompt-suggestions-row">
+                        <span class="sugg-tag-label">Quick Prompts:</span>
+                        <button class="sugg-chip" onclick="App.runSkyPrompt('Inspiring books on productivity, habits, and mindset')">Habits & Mindset 🌱</button>
+                        <button class="sugg-chip" onclick="App.runSkyPrompt('Clean code, software engineering, and technology')">Technology & Coding 💻</button>
+                        <button class="sugg-chip" onclick="App.runSkyPrompt('Epic fantasy quests, magical worlds, and Hogwarts')">Magical Fantasy ✨</button>
+                        <button class="sugg-chip" onclick="App.runSkyPrompt('Gripping murder mystery, detective novels, and thrillers')">Mystery & Suspense 🔍</button>
+                        <button class="sugg-chip" onclick="App.runSkyPrompt('Enduring classics, timeless romance, and Victorian literature')">Classics & Romance 👑</button>
+                    </div>
+
+                    <div class="sky-input-submit-row">
+                        <textarea id="sky-prompt-textarea" class="sky-prompt-field" rows="2" placeholder="e.g. I want a gripping psychological thriller or a book about building better daily habits..."></textarea>
+                        <button class="btn-sky-recommend" onclick="App.handleSkySubmit()">
+                            <span>✨ Ask Sky</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sky AI Results Area -->
+                <div class="sky-results-wrapper" id="sky-results-container">
+                    <div class="sky-empty-state">
+                        <span class="sky-empty-icon">🪄</span>
+                        <h3>Sky is ready to find your next great read!</h3>
+                        <p>Type a prompt above or click any suggested chip to generate personalized recommendations with instant borrow links.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VIEW 3: MY SHELF ================= -->
+        <section class="view-section" id="view-my-books">
+            <div class="user-shelf-management-card">
+                <div class="shelf-page-header">
+                    <div>
+                        <h2>📖 My Reading Shelf & Loan History</h2>
+                        <p>Keep track of your active borrowings, due dates, and digital readings.</p>
+                    </div>
+                </div>
+
+                <div class="shelf-table-wrapper">
+                    <table class="clean-loans-table">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Borrow Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-shelf-table-body">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VIEW 4: INSIGHTS ================= -->
+        <section class="view-section" id="view-insights">
+            <div class="insights-container-card">
+                <div class="insights-top-stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-icon">📚</span>
+                        <div class="stat-numbers">
+                            <span class="stat-label">Total Titles</span>
+                            <h3 class="stat-value" id="kpi-total-books">100</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">✅</span>
+                        <div class="stat-numbers">
+                            <span class="stat-label">Available Copies</span>
+                            <h3 class="stat-value" id="kpi-available-copies">--</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">📖</span>
+                        <div class="stat-numbers">
+                            <span class="stat-label">Currently Borrowed</span>
+                            <h3 class="stat-value" id="kpi-borrowed-copies">--</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">👥</span>
+                        <div class="stat-numbers">
+                            <span class="stat-label">Registered Readers</span>
+                            <h3 class="stat-value" id="kpi-total-borrowers">--</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insights-details-row">
+                    <div class="insights-sub-box">
+                        <h3>🏆 Most Borrowed Books Leaderboard</h3>
+                        <div id="insights-most-borrowed-list" class="leaderboard-items-list"></div>
+                    </div>
+                    <div class="insights-sub-box">
+                        <h3>📂 Category Share Distribution</h3>
+                        <div id="insights-category-list" class="category-bars-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. Email/Password + Google Login Modal -->
+    <div class="clean-modal-overlay" id="login-modal">
+        <div class="clean-modal-box auth-box">
+            <button class="btn-modal-close" onclick="App.closeModals()">&times;</button>
+            <div class="auth-box-header">
+                <span class="modal-logo-icon">🧺</span>
+                <h3>Welcome to BookBasket</h3>
+                <p class="auth-sub-quote">"Pick a book, find a world"</p>
+            </div>
+
+            <!-- Login with Google Button -->
+            <button class="btn-google-auth" onclick="App.handleGoogleLogin()">
+                <svg class="google-icon-svg" width="18" height="18" viewBox="0 0 18 18">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/>
+                    <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                    <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.347 2.825.957 4.039l3.007-2.332z"/>
+                    <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/>
+                </svg>
+                <span>Continue with Google</span>
+            </button>
+
+            <div class="modal-or-divider"><span>OR WITH EMAIL & PASSWORD</span></div>
+
+            <!-- Auth Form (Log In vs Sign Up tabs) -->
+            <div class="auth-tabs-row">
+                <button class="auth-tab-btn active" id="tab-login-btn" onclick="App.toggleAuthMode('login')">Log In</button>
+                <button class="auth-tab-btn" id="tab-register-btn" onclick="App.toggleAuthMode('register')">Sign Up</button>
+            </div>
+
+            <!-- 1. Log In Form (Email + Password) -->
+            <form id="form-login" onsubmit="App.handleEmailLogin(event)">
+                <div class="form-group-block">
+                    <label>Email ID:</label>
+                    <input type="email" id="login-email" class="clean-text-input" placeholder="e.g. yourname@example.com" required>
+                </div>
+                <div class="form-group-block">
+                    <label>Password:</label>
+                    <input type="password" id="login-password" class="clean-text-input" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn-action-solid red w-100" style="margin-top: 12px;">Log In to BookBasket ➔</button>
+                <div style="text-align: center; margin-top: 14px; font-size: 0.8125rem; color: var(--text-muted);">
+                    Don't have an account yet? <a href="#" style="color: var(--primary-red); font-weight: 700; text-decoration: none;" onclick="App.toggleAuthMode('register'); return false;">Sign Up here</a>
+                </div>
+            </form>
+
+            <!-- 2. Sign Up / Register Form -->
+            <form id="form-register" style="display: none;" onsubmit="App.handleRegisterSubmit(event)">
+                <div class="form-group-block">
+                    <label>Full Name:</label>
+                    <input type="text" id="reg-name" class="clean-text-input" placeholder="e.g. Likitha Nambari" required>
+                </div>
+                <div class="form-group-block">
+                    <label>Email ID:</label>
+                    <input type="email" id="reg-email" class="clean-text-input" placeholder="e.g. likitha@example.com" required>
+                </div>
+                <div class="form-group-block">
+                    <label>Create Password:</label>
+                    <input type="password" id="reg-password" class="clean-text-input" placeholder="••••••••" minlength="4" required>
+                </div>
+                <div class="form-group-block">
+                    <label>Phone Number (Optional):</label>
+                    <input type="tel" id="reg-phone" class="clean-text-input" placeholder="+91 9876543210">
+                </div>
+                <button type="submit" class="btn-action-solid red w-100" style="margin-top: 10px;">Sign Up</button>
+                <div style="text-align: center; margin-top: 14px; font-size: 0.8125rem; color: var(--text-muted);">
+                    Already have an account? <a href="#" style="color: var(--primary-red); font-weight: 700; text-decoration: none;" onclick="App.toggleAuthMode('login'); return false;">Log In</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Book Details & Borrow Modal -->
+    <div class="clean-modal-overlay" id="book-details-modal">
+        <div class="clean-modal-box book-details-box">
+            <button class="btn-modal-close" onclick="App.closeModals()">&times;</button>
+            <div id="book-details-content-body">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Read Book Online Modal with Interactive Reader Tools -->
+    <div class="clean-modal-overlay" id="read-book-modal">
+        <div class="clean-modal-box reader-box" style="max-width: 800px;">
+            <button class="btn-modal-close" onclick="App.closeModals()">&times;</button>
+            <div class="reader-modal-header" style="border-bottom: 1px solid var(--border-light); padding-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <h3 id="reader-book-title" style="margin: 0;">Reading Book</h3>
+                        <span id="reader-book-author" style="font-size: 0.875rem; color: var(--text-muted);">By Author</span>
+                    </div>
+                    <!-- Active Bookmark Badge -->
+                    <div id="reader-bookmark-badge" style="background: #fef3c7; color: #92400e; border: 1px solid #fde68a; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+                        <span>🔖</span> <span id="reader-bookmark-text">No bookmark set</span>
+                    </div>
+                </div>
+
+                <!-- Reader Tab Switcher: Page Text vs Highlights & Notes -->
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <button class="tab-toggle-btn active" id="btn-reader-tab-text" onclick="App.switchReaderTab('text')" style="padding: 5px 14px; font-size: 0.8125rem;">📖 Read Book</button>
+                    <button class="tab-toggle-btn" id="btn-reader-tab-notes" onclick="App.switchReaderTab('notes')" style="padding: 5px 14px; font-size: 0.8125rem;">🖍️ Highlights & Notes (<span id="reader-notes-count">0</span>)</button>
+                </div>
+            </div>
+
+            <!-- Tab 1: Book Page Text with Quick Highlight Actions -->
+            <div id="reader-tab-content-text">
+                <div class="reader-book-page">
+                    <div class="reader-content-body" id="reader-page-text">
+                        <p class="reader-ch1">Chapter 1 — Beginning</p>
+                        <p class="reader-quote-highlight">“Pick a book, find a world”</p>
+                        <p id="reader-book-description">Loading book excerpt...</p>
+                        <p class="reader-extra-text">Reading expands our imagination and connects us with the timeless thoughts of authors throughout the centuries. Enjoy this curated copy from your BookBasket digital collection.</p>
+                    </div>
+                </div>
+
+                <!-- Reader Quick Action Bar: Bookmark & Highlight -->
+                <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <label style="font-size: 0.8125rem; font-weight: 700; color: #334155;">🔖 Set Bookmark:</label>
+                        <input type="text" id="reader-bookmark-input" class="clean-text-input" style="padding: 4px 10px; font-size: 0.8125rem; width: 180px;" placeholder="e.g. Chapter 2 — Page 30">
+                        <button class="btn-action-solid red" style="padding: 5px 12px; font-size: 0.75rem;" onclick="App.saveReaderBookmark()">Save 🔖</button>
+                    </div>
+                    <button class="btn-action-outline red" style="padding: 5px 14px; font-size: 0.75rem;" onclick="App.switchReaderTab('notes')">
+                        🖍️ Add Highlight / Note
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 2: Reader Highlights, Key Points & Personal Notes -->
+            <div id="reader-tab-content-notes" style="display: none; padding: 16px 0;">
+                <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+                    <h4 style="margin: 0 0 6px 0; color: #92400e; font-size: 0.9375rem;">🖍️ Highlight Points & Personal Notes:</h4>
+                    <p style="margin: 0; font-size: 0.8125rem; color: #78350f;">Jot down memorable quotes, key takeaways, and thoughts as you read. Everything is automatically saved to your shelf.</p>
+                </div>
+
+                <!-- Add New Highlight / Note Form -->
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.8125rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Add a Key Point or Highlighted Quote:</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="reader-new-highlight-inp" class="clean-text-input" style="flex: 1; font-size: 0.875rem;" placeholder="e.g. 'When you want something, all the universe conspires in helping you to achieve it.'">
+                        <button class="btn-action-solid red" style="padding: 8px 16px; font-size: 0.8125rem;" onclick="App.addReaderHighlight()">➕ Highlight</button>
+                    </div>
+                </div>
+
+                <!-- Personal Notes Textarea -->
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.8125rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Personal Reading Reflections & Notes:</label>
+                    <textarea id="reader-personal-notes-area" class="clean-text-input" rows="3" placeholder="Write your thoughts and reflections on this book..."></textarea>
+                    <div style="text-align: right; margin-top: 6px;">
+                        <button class="btn-action-outline red" style="padding: 5px 14px; font-size: 0.75rem;" onclick="App.saveReaderPersonalNotes()">💾 Save Notes</button>
+                    </div>
+                </div>
+
+                <!-- List of Saved Highlights -->
+                <div>
+                    <h5 style="font-size: 0.875rem; color: #334155; font-weight: 700; margin-bottom: 8px;">📜 Your Saved Highlights for this Book:</h5>
+                    <div id="reader-highlights-list-container">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="reader-modal-footer" style="border-top: 1px solid var(--border-light); padding-top: 12px;">
+                <span>📖 BookBasket Interactive Reader</span>
+                <button class="btn-action-solid red" onclick="App.closeModals()">Done Reading</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Register as Author Modal -->
+    <div class="clean-modal-overlay" id="register-author-modal">
+        <div class="clean-modal-box" style="max-width: 520px;">
+            <button class="btn-modal-close" onclick="App.closeModals()">&times;</button>
+            <div class="auth-box-header">
+                <div class="modal-logo-icon">✍️</div>
+                <h3>Join as a Verified Author</h3>
+                <p>Register your author profile to publish, manage, and share your books with BookBasket readers.</p>
+            </div>
+            <form onsubmit="App.handleAuthorRegistrationSubmit(event)">
+                <div class="form-group-block">
+                    <label>Author Display Name:</label>
+                    <input type="text" id="reg-author-name" class="clean-text-input" placeholder="e.g. Paulo Coelho or J. K. Rowling" required>
+                </div>
+                <div class="form-group-block">
+                    <label>Author Biography / About You:</label>
+                    <textarea id="reg-author-bio" class="clean-text-input" rows="3" placeholder="Tell readers about your writing journey, published works, or background..." required></textarea>
+                </div>
+                <div class="form-group-block">
+                    <label>Portrait / Profile Image URL (Optional):</label>
+                    <input type="url" id="reg-author-image" class="clean-text-input" placeholder="https://images.unsplash.com/photo-...">
+                </div>
+                <button type="submit" class="btn-action-solid red w-100" style="margin-top: 10px;">✨ Register as Author</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. Add / Edit Book Modal -->
+    <div class="clean-modal-overlay" id="add-book-modal">
+        <div class="clean-modal-box add-book-box">
+            <button class="btn-modal-close" onclick="App.closeModals()">&times;</button>
+            <div class="auth-box-header">
+                <h3 id="add-book-modal-title">➕ Add New Book to Library</h3>
+                <p>Fill in the book details to expand the BookBasket collection.</p>
+            </div>
+            <form onsubmit="App.handleBookFormSubmit(event)">
+                <input type="hidden" id="edit-book-id" value="">
+                <div class="form-group-block">
+                    <label>Book Title:</label>
+                    <input type="text" id="add-book-title" class="clean-text-input" placeholder="e.g. The Alchemist" required>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group-block">
+                        <label>ISBN:</label>
+                        <input type="text" id="add-book-isbn" class="clean-text-input" placeholder="9780062315007" required>
+                    </div>
+                    <div class="form-group-block">
+                        <label>Publication Year:</label>
+                        <input type="number" id="add-book-year" class="clean-text-input" value="2020">
+                    </div>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group-block">
+                        <label>Total Copies:</label>
+                        <input type="number" id="add-book-copies" class="clean-text-input" value="5" min="1" required>
+                    </div>
+                    <div class="form-group-block">
+                        <label>Category / Genre:</label>
+                        <select id="add-book-category" class="clean-select-input" required></select>
+                    </div>
+                </div>
+                <div class="form-group-block">
+                    <label>Authors (Hold Ctrl to select multiple):</label>
+                    <select id="add-book-authors" class="clean-select-input" multiple size="3" required></select>
+                </div>
+                <div class="form-group-block">
+                    <label>Cover Image URL (Optional):</label>
+                    <input type="url" id="add-book-cover" class="clean-text-input" placeholder="https://covers.openlibrary.org/...">
+                </div>
+                <div class="form-group-block">
+                    <label>Description / Synopsis:</label>
+                    <textarea id="add-book-desc" class="clean-text-input" rows="3" placeholder="Book synopsis..."></textarea>
+                </div>
+                <button type="submit" class="btn-action-solid red w-100" id="btn-submit-book">Save Book to Catalog</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Manage Shelf Modal -->
+    <div class="clean-modal-overlay" id="shelf-notes-modal">
+        <div class="clean-modal-box">
+            <div class="clean-modal-header">
+                <h3 id="shelf-modal-title">✏️ Manage Borrowed Book on My Shelf</h3>
+                <button class="btn-close-modal" onclick="App.closeModals()">✕</button>
+            </div>
+            <div style="padding: 20px;">
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 14px;">
+                    Personal notes and reading status for <strong id="shelf-modal-book-title"></strong>:
+                </p>
+                <div class="form-group-block">
+                    <label>Reading Status / Notes:</label>
+                    <textarea id="shelf-personal-notes" class="clean-text-input" rows="3" placeholder="e.g. Currently reading Chapter 4, love the character development!"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 16px;">
+                    <button class="btn-action-solid red" style="flex: 1;" onclick="App.saveShelfNotes()">💾 Save Notes</button>
+                    <button class="btn-action-outline" style="border-color: #ef4444; color: #dc2626;" onclick="App.deleteFromShelfModal()">🗑️ Remove from Shelf</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Popup Container -->
+    <div class="toast-popup-container" id="toast-container"></div>
+
+    <!-- Main JavaScript Logic -->
+    <script src="js/app.js"></script>
+</body>
+</html>
