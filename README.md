@@ -294,7 +294,7 @@ LIMIT 1;
 
 #### 1. Clone the Repository:
 ```bash
-git clone https://github.com/your-username/bookbasket-library-platform.git
+git clone https://github.com/likithamohana/bookbasket-library-platform.git
 cd bookbasket-library-platform
 ```
 
