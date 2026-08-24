@@ -125,10 +125,14 @@ The user interface is built as a Single Page Application (SPA) with responsive l
 ---
 
 ### 6. Interactive Online Reader (Bookmarks, Highlights & Notes)
-When opening a book via the Read button:
-* **Bookmark Position**: Save chapter and page progress (e.g., Chapter 2 - Page 30). Automatically syncs to the personal shelf.
-* **Highlights & Key Points**: Save memorable quotes and key lessons while reading.
-* **Personal Notes**: Write personal reading reflections per book.
+The platform features an integrated digital reading and study companion accessible via the **Read** button:
+* **Digital Chapter Previews**: Instant online access to book excerpts, chapter beginnings, and classic literature excerpts.
+* **Reading Progress Bookmark**: Readers can save their current checkpoint (e.g., `Chapter 2 — Page 30`), which dynamically updates across their personal borrowed shelf with active bookmark tags.
+* **Quote Highlighter Tool**: Capture, highlight, and timestamp memorable quotes, core insights, and favorite passages while reading.
+* **Personal Reflections Notebook**: Dedicated reflections journal allowing readers to record personal study notes and reflections for each borrowed book.
+
+![Interactive Online Reader and Bookmark](docs/screenshots/06b_reader_bookmark_preview.png)
+![Highlights and Personal Notes Notebook](docs/screenshots/06c_reader_highlights_notes.png)
 
 ---
 
