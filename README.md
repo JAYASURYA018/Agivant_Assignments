@@ -181,7 +181,6 @@ cd backend
 .\apache-maven-3.9.6\bin\mvn.cmd spring-boot:run
 ```
 * API Server URL: `http://localhost:8081`
-* Interactive API Documentation: `http://localhost:8081/swagger-ui.html`
 
 ### 3. Start the Frontend
 Run a local static server to open the files correctly in your browser:

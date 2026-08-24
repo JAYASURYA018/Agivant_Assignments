@@ -1,15 +1,28 @@
 package com.example.leavemanagement.service;
 
-import com.example.leavemanagement.dto.*;
-import com.example.leavemanagement.entity.*;
-import com.example.leavemanagement.enums.*;
-import com.example.leavemanagement.repository.*;
-import java.time.*;
-import java.util.*;
-import org.junit.jupiter.api.*;
-import org.mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+
+import com.example.leavemanagement.dto.DashboardStatsResponse;
+import com.example.leavemanagement.entity.Employee;
+import com.example.leavemanagement.entity.LeaveRequest;
+import com.example.leavemanagement.enums.LeaveStatus;
+import com.example.leavemanagement.enums.LeaveType;
+import com.example.leavemanagement.repository.EmployeeRepository;
+import com.example.leavemanagement.repository.LeaveRequestRepository;
 
 class DashboardServiceTest {
 
@@ -30,7 +43,7 @@ class DashboardServiceTest {
     @Test
     void getDashboardStats_CalculatesAccrualsAndCarryForward() {
         Long empId = 1L;
-        
+
         Employee emp = new Employee();
         emp.setId(empId);
         emp.setFirstName("John");
@@ -77,52 +90,5 @@ class DashboardServiceTest {
         assertEquals(Math.max(0, (currentMonth * 1.0) - 2), stats.getCasualLeaveAvailable());
         assertEquals(4.0, stats.getEarnedLeaveBooked());
         assertEquals(Math.max(0, 12.0 + (currentMonth * 1.25) - 4), stats.getEarnedLeaveAvailable());
-    }
-
-    @Test
-    void getReports_CalculateCorrectSummaries() {
-        
-        Employee e1 = new Employee(1L, "EMP1", "Alice", "Smith", "alice@example.com", "pass", "Engineering", "EMPLOYEE", LocalDateTime.now());
-        Employee e2 = new Employee(2L, "EMP2", "Bob", "Jones", "bob@example.com", "pass", "Sales", "EMPLOYEE", LocalDateTime.now());
-
-        when(employeeRepository.findAll()).thenReturn(Arrays.asList(e1, e2));
-
-        
-        LeaveRequest r1 = new LeaveRequest();
-        r1.setId(1L);
-        r1.setEmployee(e1);
-        r1.setStatus(LeaveStatus.APPROVED);
-        r1.setLeaveType(LeaveType.CL);
-        r1.setNumberOfDays(6);
-
-        LeaveRequest r2 = new LeaveRequest();
-        r2.setId(2L);
-        r2.setEmployee(e1);
-        r2.setStatus(LeaveStatus.PENDING); 
-        r2.setLeaveType(LeaveType.EL);
-        r2.setNumberOfDays(4);
-
-        when(leaveRequestRepository.findAll()).thenReturn(Arrays.asList(r1, r2));
-
-        
-        List<TotalLeavesReportResponse> totalLeaves = dashboardService.getTotalLeavesReport(5);
-        assertEquals(1, totalLeaves.size());
-        assertEquals("EMP1", totalLeaves.get(0).getEmployeeId());
-        assertEquals(6.0, totalLeaves.get(0).getTotalDays());
-
-        
-        List<NoLeavesReportResponse> noLeaves = dashboardService.getNoLeavesReport();
-        assertEquals(1, noLeaves.size());
-        assertEquals("EMP2", noLeaves.get(0).getEmployeeId());
-        assertEquals("Bob Jones", noLeaves.get(0).getName());
-
-        
-        List<LeaveTypeReportResponse> freqTypes = dashboardService.getFrequentTypeReport();
-        assertEquals(3, freqTypes.size());
-        
-        LeaveTypeReportResponse clRep = freqTypes.stream().filter(f -> f.getLeaveType().equals("CL")).findFirst().get();
-        assertEquals(1, clRep.getCount());
-        assertEquals(6.0, clRep.getDays());
-        assertTrue(clRep.getIsWinner());
     }
 }

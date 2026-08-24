@@ -467,7 +467,7 @@ async function submitEmployeeForm() {
             });
             showToast('Employee updated successfully!', 'success');
         } else {
-            await apiRequest('/employees', {
+            await apiRequest('/employees/createEmp', {
                 method: 'POST',
                 body: payload
             });

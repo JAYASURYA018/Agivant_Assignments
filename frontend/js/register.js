@@ -33,7 +33,7 @@ function setupRegisterListener() {
             btnSubmit.disabled = true;
             btnSubmit.textContent = 'Registering...';
 
-            await apiRequest('/employees', {
+            await apiRequest('/employees/createEmp', {
                 method: 'POST',
                 body: payload
             });
