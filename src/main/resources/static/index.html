@@ -39,8 +39,8 @@
             <!-- Center: Search Bar in Header -->
             <div class="nav-center-search">
                 <div class="search-box-input-wrap">
-                    <input type="text" id="header-search-input" class="header-search-field" placeholder="Search books by title, author, genre, or ISBN...">
-                    <button class="btn-header-search" onclick="App.triggerSearch()" aria-label="Search">
+                    <input type="text" id="header-search-input" class="header-search-field" placeholder="Search books by title, author, genre, or ISBN..." onkeydown="if(event.key==='Enter') App.triggerSearch(true)">
+                    <button class="btn-header-search" onclick="App.triggerSearch(true)" aria-label="Search">
                         <span>🔍</span>
                     </button>
                 </div>

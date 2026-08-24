@@ -146,7 +146,7 @@ class BookServiceTest {
     @Test
     @DisplayName("Should search books matching keyword query")
     void shouldSearchBooks() {
-        when(bookRepository.searchBooks("Clean", null, null)).thenReturn(List.of(book));
+        when(bookRepository.searchBooks(eq("Clean"), eq("Clean"), isNull(), isNull())).thenReturn(List.of(book));
 
         List<BookResponseDto> results = bookService.searchBooks("Clean", null, null, "title");
 

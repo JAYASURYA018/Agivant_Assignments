@@ -28,13 +28,16 @@ public interface BookRepository extends JpaRepository<Book, Long> {
            "WHERE (:query IS NULL OR :query = '' OR " +
            "       LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            "       LOWER(b.isbn) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "       (:cleanQuery IS NOT NULL AND :cleanQuery != '' AND LOWER(b.isbn) LIKE LOWER(CONCAT('%', :cleanQuery, '%'))) OR " +
            "       LOWER(b.description) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            "       LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-           "       LOWER(a.name) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+           "       LOWER(a.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "       LOWER(a.bio) LIKE LOWER(CONCAT('%', :query, '%'))) " +
            "AND (:categoryId IS NULL OR c.id = :categoryId) " +
            "AND (:availableOnly IS NULL OR :availableOnly = false OR b.availableCopies > 0)")
     List<Book> searchBooks(
             @Param("query") String query,
+            @Param("cleanQuery") String cleanQuery,
             @Param("categoryId") Long categoryId,
             @Param("availableOnly") Boolean availableOnly
     );

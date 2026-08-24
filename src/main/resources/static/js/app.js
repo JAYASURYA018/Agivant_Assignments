@@ -67,7 +67,13 @@ const App = {
         searchInput?.addEventListener('input', (e) => {
             this.state.searchQuery = e.target.value;
             clearTimeout(searchDebounce);
-            searchDebounce = setTimeout(() => this.filterAndRenderBooks(), 300);
+            searchDebounce = setTimeout(() => this.triggerSearch(false), 250);
+        });
+        searchInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.triggerSearch(true);
+            }
         });
 
         // Drawer
@@ -621,9 +627,42 @@ const App = {
         this.filterAndRenderBooks();
     },
 
-    triggerSearch() {
-        const query = document.getElementById('header-search-input')?.value.trim();
+    triggerSearch(shouldScroll = true) {
+        const query = document.getElementById('header-search-input')?.value.trim() || '';
         this.state.searchQuery = query;
+
+        // Ensure user is on Home view and Books Catalog tab
+        if (!document.getElementById('view-home')?.classList.contains('active')) {
+            this.navigateTo('home');
+        }
+        if (this.state.currentTab !== 'books') {
+            this.switchTab('books');
+        }
+
+        // Reset active genre bubble highlight if searching globally
+        if (query && this.state.activeGenreId) {
+            this.state.activeGenreId = '';
+            document.querySelectorAll('#genres-icons-track .genre-bubble').forEach(b => b.classList.remove('active'));
+        }
+
+        this.filterAndRenderBooks();
+
+        if (shouldScroll && query) {
+            setTimeout(() => {
+                const booksSec = document.getElementById('section-trending');
+                if (booksSec) {
+                    booksSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        }
+    },
+
+    clearSearch() {
+        const searchInput = document.getElementById('header-search-input');
+        if (searchInput) searchInput.value = '';
+        this.state.searchQuery = '';
+        this.state.activeGenreId = '';
+        document.querySelectorAll('#genres-icons-track .genre-bubble').forEach(b => b.classList.remove('active'));
         this.filterAndRenderBooks();
     },
 
@@ -657,11 +696,11 @@ const App = {
                 this.state.books = json.data;
                 if (badge) badge.style.display = 'none';
                 if (heading) {
-                    if (this.state.activeGenreId) {
+                    if (this.state.searchQuery) {
+                        heading.innerHTML = `Search Results for "<span style="color: var(--primary-red); font-weight: 800;">${this.escapeHtml(this.state.searchQuery)}</span>" <span style="font-size: 0.875rem; color: var(--text-muted); font-weight: 500;">(${json.data.length} books found)</span> <button class="btn-action-outline red" style="font-size: 0.75rem; padding: 2px 8px; margin-left: 10px; vertical-align: middle;" onclick="App.clearSearch()">✕ Clear Search</button>`;
+                    } else if (this.state.activeGenreId) {
                         const cat = this.state.categories.find(c => c.id == this.state.activeGenreId);
-                        heading.textContent = cat ? `${cat.name}` : 'Filtered Collection';
-                    } else if (this.state.searchQuery) {
-                        heading.textContent = `Search Results for "${this.state.searchQuery}"`;
+                        heading.innerHTML = cat ? `${cat.name} Books <span style="font-size: 0.875rem; color: var(--text-muted); font-weight: 500;">(${json.data.length} titles)</span> <button class="btn-action-outline red" style="font-size: 0.75rem; padding: 2px 8px; margin-left: 10px; vertical-align: middle;" onclick="App.clearSearch()">✕ Show All</button>` : 'Filtered Collection';
                     } else {
                         heading.textContent = 'Books & Best Sellers';
                     }

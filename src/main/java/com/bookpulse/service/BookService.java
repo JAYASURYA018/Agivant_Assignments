@@ -56,7 +56,11 @@ public class BookService {
 
     @Transactional(readOnly = true)
     public List<BookResponseDto> searchBooks(String query, Long categoryId, Boolean availableOnly, String sortBy) {
-        List<Book> books = bookRepository.searchBooks(query, categoryId, availableOnly);
+        String cleanQuery = null;
+        if (query != null && !query.trim().isEmpty()) {
+            cleanQuery = query.replaceAll("[^a-zA-Z0-9]", "");
+        }
+        List<Book> books = bookRepository.searchBooks(query != null ? query.trim() : null, cleanQuery, categoryId, availableOnly);
 
         List<BookResponseDto> dtos = books.stream()
                 .map(this::mapToResponseDto)
