@@ -14,16 +14,25 @@ The system strictly enforces business rules for inventory consistency (a book ca
 
 ## Table of Contents
 1. [Problem Statement](#problem-statement)
-2. [Technology Stack](#technology-stack)
-3. [User Authentication & Author Registration Flow](#user-authentication--author-registration-flow)
-4. [Frontend Architecture & User Interface](#frontend-architecture--user-interface)
-5. [Backend Engineering & Architecture](#backend-engineering--architecture)
-6. [Mandatory REST API Specifications](#mandatory-rest-api-specifications)
-7. [Business Rules & Validation Logic](#business-rules--validation-logic)
-8. [Database Design & Live SQL Query Results](#database-design--live-sql-query-results)
-9. [Download, Setup & Run Guide](#download-setup--run-guide)
-10. [Testing & Quality Assurance](#testing--quality-assurance)
-11. [Project Structure](#project-structure)
+2. [System Design Architecture](#system-design-architecture)
+3. [Technology Stack](#technology-stack)
+4. [User Authentication & Author Registration Flow](#user-authentication--author-registration-flow)
+5. [Frontend Architecture & User Interface](#frontend-architecture--user-interface)
+6. [Backend Engineering & Architecture](#backend-engineering--architecture)
+7. [Mandatory REST API Specifications](#mandatory-rest-api-specifications)
+8. [Business Rules & Validation Logic](#business-rules--validation-logic)
+9. [Database Design & Live SQL Query Results](#database-design--live-sql-query-results)
+10. [Download, Setup & Run Guide](#download-setup--run-guide)
+11. [Testing & Quality Assurance](#testing--quality-assurance)
+12. [Project Structure](#project-structure)
+
+---
+
+## System Design Architecture
+
+The high-level system design of BookBasket illustrates the complete end-to-end flow across client devices, the frontend web application, layered Spring Boot backend architecture, relational database entities, external OpenLibrary CDN services, and cross-cutting concerns:
+
+![BookBasket System Design Architecture](docs/screenshots/00_system_architecture.jpg)
 
 ---
 

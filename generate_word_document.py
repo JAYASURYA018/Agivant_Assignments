@@ -273,11 +273,16 @@ def build_professional_word_document():
     add_bullet(doc, " Integrated digital reader companion allowing readers to save chapter bookmarks, capture quote highlights, and maintain personal reflections directly inside their shelf.", bold_prefix="Interactive Digital Reading Companion:")
     add_bullet(doc, " Keyword and genre-affinity recommendation engine that matches reader intent to curated catalog titles.", bold_prefix="Natural-Language AI Book Discovery:")
 
-    # ------------------ 2. ARCHITECTURAL APPROACH & DESIGN PATTERNS ------------------
-    add_heading_1(doc, "2. Architectural Approach & Design Philosophy")
+    # ------------------ 2. SYSTEM DESIGN ARCHITECTURE ------------------
+    add_heading_1(doc, "2. System Design Architecture")
+    add_paragraph(doc, "The high-level system design architecture of BookBasket illustrates the complete end-to-end flow across client devices, the frontend web application, layered Spring Boot backend architecture, relational database entities, external OpenLibrary CDN services, and cross-cutting concerns:")
+    add_image_with_caption(doc, os.path.join(img_dir, "00_system_architecture.jpg"), "BookBasket System Design Architecture (End-to-End Enterprise Flow)", 5.8)
+
+    # ------------------ 3. ARCHITECTURAL APPROACH & DESIGN PATTERNS ------------------
+    add_heading_1(doc, "3. Architectural Approach & Design Philosophy")
     add_paragraph(doc, "BookBasket adheres to the Clean Layered Architecture paradigm, enforcing strict separation of concerns across presentation, business logic, domain entities, and data persistence.")
 
-    add_heading_2(doc, "2.1 Backend Engineering & Design Patterns")
+    add_heading_2(doc, "3.1 Backend Engineering & Design Patterns")
     add_bullet(doc, " Exposes standardized RESTful JSON endpoints returning uniform ApiResponse<T> structures. Enforces parameter validations (@Valid, @NotNull, @NotBlank, @Min) and routes unhandled exceptions to GlobalExceptionHandler.", bold_prefix="REST Controller Layer: ")
     add_bullet(doc, " Encapsulates core business rules including inventory constraints, loan period calculations (default 14 days), ISBN uniqueness verification, and natural-language scoring algorithms. Uses @Transactional to ensure complete database atomicity.", bold_prefix="Service Business Logic Layer: ")
     add_bullet(doc, " Leverages Spring Data JPA interfaces with custom JPQL queries for optimized multi-factor searching (matching title, author name, genre, and clean ISBN without hyphens).", bold_prefix="Repository & Persistence Layer: ")
@@ -291,67 +296,70 @@ def build_professional_word_document():
     # ------------------ 3. DETAILED FEATURE SPECIFICATION & SCREENSHOTS ------------------
     add_heading_1(doc, "3. Feature Specifications & Visual Demonstrations")
 
+    # ------------------ 4. FEATURE SPECIFICATIONS ------------------
+    add_heading_1(doc, "4. Feature Specifications & Visual Demonstrations")
+
     # Feature 1
-    add_heading_2(doc, "3.1 Hero Header, Global Navigation & Role-Based Authentication")
+    add_heading_2(doc, "4.1 Hero Header, Global Navigation & Role-Based Authentication")
     add_paragraph(doc, "The application features a modern header with BookBasket branding, a universal search bar with live auto-complete, quick genre jump anchors, and session-aware authentication pills. Guests can log in or register with one click, which dynamically swaps the login trigger for a personalized user avatar pill.")
     add_image_with_caption(doc, os.path.join(img_dir, "01_hero_header.png"), "BookBasket Hero Header, Search Engine, and Navigation Bar", 5.8)
     add_image_with_caption(doc, os.path.join(img_dir, "01b_login_modal.png"), "Interactive Clean Modal for Reader Sign-In & Google SSO Simulation", 4.5)
     add_image_with_caption(doc, os.path.join(img_dir, "01c_hero_verified_author.png"), "Dynamic Hero State for Verified Author Likitha Nambari", 5.8)
 
     # Feature 2
-    add_heading_2(doc, "3.2 20 Distinct Genres & Dynamic Book Jacket Fallback System")
+    add_heading_2(doc, "4.2 20 Distinct Genres & Dynamic Book Jacket Fallback System")
     add_paragraph(doc, "BookBasket organizes over 100 library titles across 20 distinct literary genres (Fiction, Mystery, Thriller, Romance, Fantasy, Sci-Fi, Horror, Historical Fiction, Adventure, Biography, Autobiography, Self-Help, Psychology, Philosophy, Business, Technology, Young Adult, Children's Literature, Poetry, and Classics). If OpenLibrary image covers are missing or fail to load, an automatic CSS gradient book jacket is dynamically rendered with thematic emblems and gold-embossed typography.")
     add_image_with_caption(doc, os.path.join(img_dir, "02_genres_and_catalog.png"), "Interactive 20 Genre Bubble Bar & Responsive Books Catalog Grid", 5.8)
 
     # Feature 3
-    add_heading_2(doc, "3.3 Book Details, Synopsis & Community Star Rating Reviews")
+    add_heading_2(doc, "4.3 Book Details, Synopsis & Community Star Rating Reviews")
     add_paragraph(doc, "Clicking 'View Details' opens an expansive modal displaying full publication metadata, author biography, ISBN-13, current inventory availability, and community star reviews. Readers can rate books on a 1-5 star scale and submit written reviews that instantly persist to the H2 database.")
     add_image_with_caption(doc, os.path.join(img_dir, "03_book_details_and_reviews.png"), "Book Details Modal with Live Community Reviews & Star Rating System", 5.2)
 
     # Feature 4
-    add_heading_2(doc, "3.4 Real-Time My Shelf & Borrowing Transaction Table")
+    add_heading_2(doc, "4.4 Real-Time My Shelf & Borrowing Transaction Table")
     add_paragraph(doc, "The dedicated My Shelf view displays a comprehensive, real-time ledger of all currently borrowed titles, loan dates, strict 14-day due dates, status badges (BORROWED / RETURNED / OVERDUE), and instant 1-click Return buttons. Returning a book triggers automatic +1 stock inventory restoration in the database.")
     add_image_with_caption(doc, os.path.join(img_dir, "04_my_reading_shelf_table.png"), "Real-Time Personal Shelf Table Tracking Active Loans and Due Dates", 5.8)
 
     # Feature 5
-    add_heading_2(doc, "3.5 Multi-Item Borrowed Shelf Carousel")
+    add_heading_2(doc, "4.5 Multi-Item Borrowed Shelf Carousel")
     add_paragraph(doc, "When a reader possesses active loans, a sleek, horizontal carousel automatically emerges directly beneath the hero section on the homepage, allowing readers to jump straight into their active books, check due dates, or launch the digital reader.")
     add_image_with_caption(doc, os.path.join(img_dir, "05_borrowed_shelf_carousel.png"), "Home Page Borrowed Shelf Carousel with Quick-Read Access", 5.8)
 
     # Feature 6
-    add_heading_2(doc, "3.6 Interactive Online Reader, Bookmarks & Quotes Highlighter")
+    add_heading_2(doc, "4.6 Interactive Online Reader, Bookmarks & Quotes Highlighter")
     add_paragraph(doc, "A full-screen digital reading companion accessible via the 'Read' button. It provides digital chapter excerpts, a Reading Progress Bookmark tool (e.g. Chapter 3 — Page 45) that attaches active bookmark badges to the shelf card, a Quote Highlighter for capturing memorable insights, and a personal reflections study journal.")
     add_image_with_caption(doc, os.path.join(img_dir, "06b_reader_bookmark_preview.png"), "Interactive Online Reader with Chapter Previews and Progress Bookmarking", 5.5)
     add_image_with_caption(doc, os.path.join(img_dir, "06c_reader_highlights_notes.png"), "Quote Highlighter Tool & Personal Reflections Notebook", 5.5)
 
     # Feature 7
-    add_heading_2(doc, "3.7 Natural-Language Sky AI Recommender Engine")
+    add_heading_2(doc, "4.7 Natural-Language Sky AI Recommender Engine")
     add_paragraph(doc, "Sky AI analyzes reader prompts (e.g. 'I want an inspiring book on software architecture' or 'A gripping fantasy novel') using keyword scoring, mood extraction, and author affinity to deliver 3 top recommendations with companion books and an instant 'Borrow Now' action.")
     add_image_with_caption(doc, os.path.join(img_dir, "06_sky_ai_recommender.png"), "Sky AI Smart Book Recommender Answering Reader Queries", 5.5)
 
     # Feature 8
-    add_heading_2(doc, "3.8 Sidebar Navigation Drawer & Verified Author Profile Menu")
+    add_heading_2(doc, "4.8 Sidebar Navigation Drawer & Verified Author Profile Menu")
     add_paragraph(doc, "A slide-out drawer providing seamless navigation across Home, My Shelf, Authors Directory, Ask Sky AI, and Library Insights. For verified authors, the drawer displays their author status badge and direct shortcuts to publish new books.")
     add_image_with_caption(doc, os.path.join(img_dir, "07_sidebar_navigation_drawer.png"), "Slide-Out Navigation Drawer with Author Registration Callout", 4.2)
     add_image_with_caption(doc, os.path.join(img_dir, "07b_sidebar_drawer_author.png"), "Sidebar Drawer Transitioned to Verified Author Mode", 4.2)
 
     # Feature 9
-    add_heading_2(doc, "3.9 Lifetime Borrowing History & Personalized Catalog Discovery")
+    add_heading_2(doc, "4.9 Lifetime Borrowing History & Personalized Catalog Discovery")
     add_paragraph(doc, "Tracks complete lifetime reading history with timestamps, returned dates, and personalized recommendations derived from previously read genres.")
     add_image_with_caption(doc, os.path.join(img_dir, "08_borrowing_history_and_recommendations.png"), "Lifetime Borrowing History & Smart Recommendations", 5.8)
 
     # Feature 10
-    add_heading_2(doc, "3.10 Library Insights & Real-Time Analytics Dashboard")
+    add_heading_2(doc, "4.10 Library Insights & Real-Time Analytics Dashboard")
     add_paragraph(doc, "An executive-level metrics center showcasing 4 key KPI cards (Total Titles, Total Copies, Currently Borrowed, Registered Readers), the Most Borrowed Books Leaderboard, and Category Share Distribution progress bars.")
     add_image_with_caption(doc, os.path.join(img_dir, "09_library_insights_stats.png"), "Library Insights Dashboard with KPI Metrics & Circulation Leaderboards", 5.8)
 
     # Feature 11
-    add_heading_2(doc, "3.11 Author Verification & Seamless Book Publishing Flow")
+    add_heading_2(doc, "4.11 Author Verification & Seamless Book Publishing Flow")
     add_paragraph(doc, "Readers can register as authors via a dedicated modal. Once verified, the UI automatically transitions to 'Verified Author', updates the database author count, and unlocks the 'Publish Book' modal. The modal automatically binds the author's identity and auto-generates collision-free ISBNs.")
     add_image_with_caption(doc, os.path.join(img_dir, "05b_add_book_modal_author.png"), "Author-Bound Book Publishing Modal with Auto-Generated ISBN", 5.2)
 
-    # ------------------ 4. RELATIONAL DATABASE DESIGN & H2 QUERIES ------------------
-    add_heading_1(doc, "4. Relational Database Design & Schema Verification")
+    # ------------------ 5. RELATIONAL DATABASE DESIGN & H2 QUERIES ------------------
+    add_heading_1(doc, "5. Relational Database Design & Schema Verification")
     add_paragraph(doc, "The database is managed by Hibernate ORM on an in-memory H2 database engine (jdbc:h2:mem:bookbasketdb). All tables are populated on startup via DataInitializer.java.")
     
     add_image_with_caption(doc, os.path.join(img_dir, "09_h2_console_login.png"), "H2 Database Console Login (jdbc:h2:mem:bookbasketdb, user: sa)", 4.8)
@@ -362,8 +370,8 @@ def build_professional_word_document():
     add_image_with_caption(doc, os.path.join(img_dir, "14_h2_query_categories.png"), "Live SQL Query on CATEGORIES (20 Genres) Table", 5.8)
     add_image_with_caption(doc, os.path.join(img_dir, "15_h2_query_reviews.png"), "Live SQL Query on REVIEWS Table", 5.8)
 
-    # ------------------ 5. MANDATORY REST APIS SPECIFICATION ------------------
-    add_heading_1(doc, "5. REST API Specifications")
+    # ------------------ 6. MANDATORY REST APIS SPECIFICATION ------------------
+    add_heading_1(doc, "6. REST API Specifications")
     add_paragraph(doc, "The platform exposes an exhaustive, enterprise-grade RESTful API surface compliant with HTTP/1.1 and JSON specifications:")
     
     headers = ["HTTP Method", "API Endpoint Path", "Controller", "Function & Business Rules"]
@@ -387,8 +395,8 @@ def build_professional_word_document():
     ]
     create_styled_table(doc, headers, api_data, [1.0, 1.8, 1.4, 2.8])
 
-    # ------------------ 6. AUTOMATED TEST SUITE & VERIFICATION PROOF ------------------
-    add_heading_1(doc, "6. Test Suite & Verification Proof")
+    # ------------------ 7. AUTOMATED TEST SUITE & VERIFICATION PROOF ------------------
+    add_heading_1(doc, "7. Test Suite & Verification Proof")
     add_paragraph(doc, "The platform is guarded by a comprehensive JUnit 5 and Mockito test suite comprising 64 unit and controller integration tests. All tests execute via 'mvn test' with 0 failures and 0 errors.")
     
     add_bullet(doc, " Validates all CRUD actions, validation constraints, duplicate ISBN protection, and stock integrity.", bold_prefix="BookControllerTest & BookServiceTest (11 Tests): ")
@@ -399,12 +407,12 @@ def build_professional_word_document():
     add_bullet(doc, " Verifies real-time metric counter aggregation.", bold_prefix="DashboardControllerTest (1 Test): ")
     add_bullet(doc, " Asserts structured error JSON for ResourceNotFound, DuplicateResource, and Validation errors.", bold_prefix="GlobalExceptionHandlerTest (5 Tests): ")
 
-    add_heading_2(doc, "6.1 Terminal Execution & Test Success Screenshots")
+    add_heading_2(doc, "7.1 Terminal Execution & Test Success Screenshots")
     add_image_with_caption(doc, os.path.join(img_dir, "16_terminal_test_execution.png"), "Maven Test Execution Running 64 Unit & Controller Tests", 5.8)
     add_image_with_caption(doc, os.path.join(img_dir, "17_terminal_test_success.png"), "Terminal Test Verification: 64 Tests Run, 0 Failures, 0 Errors (BUILD SUCCESS)", 5.8)
 
-    # ------------------ 7. PROJECT STRUCTURE ------------------
-    add_heading_1(doc, "7. Project Structure")
+    # ------------------ 8. PROJECT STRUCTURE ------------------
+    add_heading_1(doc, "8. Project Structure")
     
     tree_text = (
         "bookbasket-library-platform/\n"
@@ -440,9 +448,10 @@ def build_professional_word_document():
     run_tree.font.size = Pt(8.5)
     run_tree.font.color.rgb = COLOR_BLACK
 
-    # ------------------ 8. AUTHOR ATTRIBUTION ------------------
-    add_heading_1(doc, "8. Authorship & Project Attribution")
+    # ------------------ 9. AUTHOR ATTRIBUTION ------------------
+    add_heading_1(doc, "9. Authorship & Project Attribution")
     add_paragraph(doc, "This project was designed, developed, architected, and verified by Likitha as part of the BookBasket Smart Online Book Rental & Library Operations Platform.", bold_prefix="Author: ")
+    add_paragraph(doc, "All rights reserved. Developed with clean architecture, enterprise Java, and modern web design standards.")
     add_paragraph(doc, "All rights reserved. Developed with clean architecture, enterprise Java, and modern web design standards.")
 
     # Save Document
