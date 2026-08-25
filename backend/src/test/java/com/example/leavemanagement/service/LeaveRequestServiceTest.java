@@ -21,8 +21,7 @@ class LeaveRequestServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
-    @Mock
-    private com.example.leavemanagement.repository.HolidayRepository holidayRepository;
+    @Mockprivate HolidayRepository holidayRepository;
 
     @InjectMocks
     private LeaveRequestService leaveRequestService;
