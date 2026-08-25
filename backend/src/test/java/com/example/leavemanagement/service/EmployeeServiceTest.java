@@ -17,7 +17,7 @@ class EmployeeServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
-    private final com.example.leavemanagement.config.JwtTokenProvider jwtTokenProvider = new com.example.leavemanagement.config.JwtTokenProvider();
+    private final  JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
 
     private EmployeeService employeeService;
 
