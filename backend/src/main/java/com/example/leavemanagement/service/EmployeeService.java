@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final com.example.leavemanagement.config.JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public EmployeeService(EmployeeRepository employeeRepository, com.example.leavemanagement.config.JwtTokenProvider jwtTokenProvider) {
+    public EmployeeService(EmployeeRepository employeeRepository, JwtTokenProvider jwtTokenProvider) {
         this.employeeRepository = employeeRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
