@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Management System</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <h1>📚 Book Management System</h1>
+
+  <section class="card">
+    <h2>Add Book</h2>
+    <form id="bookForm">
+      <input id="title" placeholder="Book title" required>
+      <select id="author" required></select>
+      <select id="category" required></select>
+      <input id="totalCopies" type="number" min="1" placeholder="Total copies" required>
+      <input id="availableCopies" type="number" min="0" placeholder="Available copies" required>
+      <button type="submit">Add Book</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="searchRow">
+      <input id="search" placeholder="Search by book title...">
+      <button onclick="loadBooks()">Search</button>
+      <button class="secondary" onclick="loadBooks()">Show All</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Books</h2>
+    <div id="message"></div>
+    <div id="books"></div>
+  </section>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
