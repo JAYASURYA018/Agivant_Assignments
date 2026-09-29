@@ -21,13 +21,9 @@ public class DashboardService {
     }
 
     public DashboardStatsResponse getDashboardStats(Long employeeId) {
-        String employeeName = "Guest Employee";
         Employee emp = null;
         if (employeeId != null) {
             emp = employeeRepository.findById(employeeId).orElse(null);
-            if (emp != null) {
-                employeeName = emp.getFirstName() + " " + emp.getLastName();
-            }
         }
 
         long totalEmployees = employeeRepository.count();
@@ -37,12 +33,9 @@ public class DashboardService {
         LocalDate startOfYear = LocalDate.of(currentYear, 1, 1);
         LocalDate endOfYear = LocalDate.of(currentYear, 12, 31);
 
-        long leaveBookedThisYear = 0;
-        if (employeeId != null) {
-            leaveBookedThisYear = leaveRequestRepository.sumApprovedDaysForEmployeeAndYear(employeeId, startOfYear, endOfYear);
-        } else {
-            leaveBookedThisYear = leaveRequestRepository.sumApprovedDaysForYear(startOfYear, endOfYear);
-        }
+        long leaveBookedThisYear = (employeeId != null)
+                ? leaveRequestRepository.sumApprovedDaysForEmployeeAndYear(employeeId, startOfYear, endOfYear)
+                : 0;
 
         double clBooked = 0;
         double slBooked = 0;
@@ -54,26 +47,6 @@ public class DashboardService {
 
         if (employeeId != null) {
             List<LeaveRequest> requests = leaveRequestRepository.findByEmployeeId(employeeId);
-            
-            int startYear = currentYear;
-            if (emp != null && emp.getCreatedAt() != null) {
-                startYear = emp.getCreatedAt().getYear();
-            }
-
-            double carriedForwardEL = 0.0;
-            for (int yr = startYear; yr < currentYear; yr++) {
-                double elEarnedInYr = 12 * 1.25; 
-                double elTakenInYr = 0.0;
-                for (LeaveRequest req : requests) {
-                    if (req.getStatus() == LeaveStatus.APPROVED && req.getLeaveType() == LeaveType.EL) {
-                        int reqYear = req.getStartDate().getYear();
-                        if (reqYear == yr) {
-                            elTakenInYr += req.getNumberOfDays();
-                        }
-                    }
-                }
-                carriedForwardEL = Math.max(0, carriedForwardEL + elEarnedInYr - elTakenInYr);
-            }
 
             for (LeaveRequest req : requests) {
                 if (req.getStatus() == LeaveStatus.APPROVED) {
@@ -91,18 +64,16 @@ public class DashboardService {
             }
 
             int currentMonth = LocalDate.now().getMonthValue();
-            
+
             clAvailable = Math.max(0, (currentMonth * 1.0) - clBooked);
             slAvailable = Math.max(0, 5.0 - slBooked);
-            elAvailable = Math.max(0, carriedForwardEL + (currentMonth * 1.25) - elBooked);
+            elAvailable = Math.max(0, (currentMonth * 1.25) - elBooked);
         }
 
         return DashboardStatsResponse.builder()
-                .employeeName(employeeName)
                 .totalEmployees(totalEmployees)
                 .pendingApprovals(pendingApprovals)
                 .leaveBookedThisYear(leaveBookedThisYear)
-                .absentToday(0)
                 .casualLeaveAvailable(clAvailable)
                 .casualLeaveBooked(clBooked)
                 .sickLeaveAvailable(slAvailable)

@@ -166,25 +166,4 @@ function initProfileDropdown(isPagesFolder = false) {
             logout(isPagesFolder);
         });
     }
-
-    
-    const searchBtn = document.getElementById('nav-search-btn');
-    if (searchBtn) {
-        searchBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const searchInput = document.getElementById('search-employee-input') || 
-                                document.querySelector('input[type="search"]') ||
-                                document.querySelector('input[placeholder*="Search"]') ||
-                                document.querySelector('input[placeholder*="search"]');
-            if (searchInput) {
-                searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                setTimeout(() => {
-                    searchInput.focus();
-                    searchInput.select();
-                }, 200);
-            } else {
-                showToast('Use search options inside Team or Leave Requests tabs.', 'info');
-            }
-        });
-    }
 }

@@ -41,7 +41,7 @@ class DashboardServiceTest {
     }
 
     @Test
-    void getDashboardStats_CalculatesAccrualsAndCarryForward() {
+    void getDashboardStats_CalculatesAccruals() {
         Long empId = 1L;
 
         Employee emp = new Employee();
@@ -81,7 +81,6 @@ class DashboardServiceTest {
         DashboardStatsResponse stats = dashboardService.getDashboardStats(empId);
 
         assertNotNull(stats);
-        assertEquals("John Doe", stats.getEmployeeName());
         assertEquals(5.0, stats.getSickLeaveAvailable());
         assertEquals(0.0, stats.getSickLeaveBooked());
 
@@ -89,6 +88,6 @@ class DashboardServiceTest {
         assertEquals(2.0, stats.getCasualLeaveBooked());
         assertEquals(Math.max(0, (currentMonth * 1.0) - 2), stats.getCasualLeaveAvailable());
         assertEquals(4.0, stats.getEarnedLeaveBooked());
-        assertEquals(Math.max(0, 12.0 + (currentMonth * 1.25) - 4), stats.getEarnedLeaveAvailable());
+        assertEquals(Math.max(0, (currentMonth * 1.25) - 4), stats.getEarnedLeaveAvailable());
     }
 }

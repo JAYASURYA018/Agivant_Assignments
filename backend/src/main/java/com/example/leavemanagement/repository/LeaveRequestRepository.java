@@ -1,12 +1,15 @@
 package com.example.leavemanagement.repository;
 
-import com.example.leavemanagement.entity.LeaveRequest;
-import com.example.leavemanagement.enums.LeaveStatus;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.data.jpa.repository.*;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.example.leavemanagement.entity.LeaveRequest;
+import com.example.leavemanagement.enums.LeaveStatus;
 
 @Repository
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
@@ -29,4 +32,7 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
 
     @Query("SELECT lr FROM LeaveRequest lr WHERE lr.status = 'APPROVED' AND lr.startDate <= :endDate AND lr.endDate >= :startDate")
     List<LeaveRequest> findApprovedLeavesInRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+  
+
 }

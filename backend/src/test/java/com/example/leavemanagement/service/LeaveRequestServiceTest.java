@@ -21,7 +21,8 @@ class LeaveRequestServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
-    @Mockprivate HolidayRepository holidayRepository;
+    @Mock
+    private HolidayRepository holidayRepository;
 
     @InjectMocks
     private LeaveRequestService leaveRequestService;
@@ -41,17 +42,17 @@ class LeaveRequestServiceTest {
     @Test
     void createLeaveRequest_Success_CalculatesDays() {
         LeaveRequestDto dto = new LeaveRequestDto(1L, LeaveType.CL, LocalDate.of(2026, 8, 10), LocalDate.of(2026, 8, 12), "Family event");
-        
+
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(mockEmployee));
         when(leaveRequestRepository.findByEmployeeId(1L)).thenReturn(Collections.emptyList());
-        
+
         LeaveRequest savedRequest = new LeaveRequest();
         savedRequest.setId(10L);
         savedRequest.setEmployee(mockEmployee);
         savedRequest.setLeaveType(LeaveType.CL);
         savedRequest.setStartDate(dto.getStartDate());
         savedRequest.setEndDate(dto.getEndDate());
-        savedRequest.setNumberOfDays(3); 
+        savedRequest.setNumberOfDays(3);
         savedRequest.setStatus(LeaveStatus.PENDING);
         savedRequest.setReason("Family event");
 
@@ -61,26 +62,26 @@ class LeaveRequestServiceTest {
 
         assertNotNull(response);
         assertEquals(10L, response.getId());
-        assertEquals(3, response.getNumberOfDays()); 
+        assertEquals(3, response.getNumberOfDays());
         assertEquals(LeaveStatus.PENDING, response.getStatus());
         verify(leaveRequestRepository, times(1)).save(any(LeaveRequest.class));
     }
 
     @Test
     void createLeaveRequest_Success_ExcludesWeekends() {
-        
+
         LeaveRequestDto dto = new LeaveRequestDto(1L, LeaveType.CL, LocalDate.of(2026, 8, 7), LocalDate.of(2026, 8, 10), "Weekend trip");
-        
+
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(mockEmployee));
         when(leaveRequestRepository.findByEmployeeId(1L)).thenReturn(Collections.emptyList());
-        
+
         LeaveRequest savedRequest = new LeaveRequest();
         savedRequest.setId(11L);
         savedRequest.setEmployee(mockEmployee);
         savedRequest.setLeaveType(LeaveType.CL);
         savedRequest.setStartDate(dto.getStartDate());
         savedRequest.setEndDate(dto.getEndDate());
-        savedRequest.setNumberOfDays(2); 
+        savedRequest.setNumberOfDays(2);
         savedRequest.setStatus(LeaveStatus.PENDING);
 
         when(leaveRequestRepository.save(any(LeaveRequest.class))).thenReturn(savedRequest);
@@ -88,13 +89,13 @@ class LeaveRequestServiceTest {
         LeaveResponse response = leaveRequestService.createLeaveRequest(dto);
 
         assertNotNull(response);
-        assertEquals(2, response.getNumberOfDays()); 
+        assertEquals(2, response.getNumberOfDays());
     }
 
     @Test
     void createLeaveRequest_InvalidDates_ThrowsBusinessException() {
         LeaveRequestDto dto = new LeaveRequestDto(1L, LeaveType.CL, LocalDate.of(2026, 8, 15), LocalDate.of(2026, 8, 12), "Error dates");
-        
+
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(mockEmployee));
 
         BusinessException exception = assertThrows(BusinessException.class, () -> {
@@ -108,10 +109,9 @@ class LeaveRequestServiceTest {
     @Test
     void createLeaveRequest_OverlappingDates_ThrowsBusinessException() {
         LeaveRequestDto dto = new LeaveRequestDto(1L, LeaveType.CL, LocalDate.of(2026, 8, 10), LocalDate.of(2026, 8, 12), "Overlap attempt");
-        
+
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(mockEmployee));
 
-        
         LeaveRequest existing = new LeaveRequest();
         existing.setId(1L);
         existing.setEmployee(mockEmployee);
@@ -222,10 +222,7 @@ class LeaveRequestServiceTest {
 
     @Test
     void createLeaveRequest_ExcludesWeekendsAndHolidays() {
-        
-        
-        
-        
+
         LocalDate start = LocalDate.of(2026, 9, 11);
         LocalDate end = LocalDate.of(2026, 9, 15);
         LeaveRequestDto dto = new LeaveRequestDto(1L, LeaveType.CL, start, end, "Ganesh Chaturthi gap");
@@ -233,7 +230,7 @@ class LeaveRequestServiceTest {
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(mockEmployee));
         when(leaveRequestRepository.findByEmployeeId(1L)).thenReturn(Collections.emptyList());
 
-        com.example.leavemanagement.entity.Holiday chaturthi = new com.example.leavemanagement.entity.Holiday();
+        Holiday chaturthi = new Holiday();
         chaturthi.setHolidayDate(LocalDate.of(2026, 9, 14));
         when(holidayRepository.findAll()).thenReturn(Collections.singletonList(chaturthi));
 

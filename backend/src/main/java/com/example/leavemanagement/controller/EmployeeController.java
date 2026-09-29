@@ -1,11 +1,24 @@
 package com.example.leavemanagement.controller;
 
-import com.example.leavemanagement.dto.*;
-import com.example.leavemanagement.service.EmployeeService;
-import jakarta.validation.Valid;
 import java.util.List;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.leavemanagement.dto.EmployeeRequest;
+import com.example.leavemanagement.dto.EmployeeResponse;
+import com.example.leavemanagement.service.EmployeeService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -27,18 +40,25 @@ public class EmployeeController {
     public ResponseEntity<List<EmployeeResponse>> getAllEmployees(
             @RequestParam(value = "sortBy", required = false) String sortBy,
             @RequestParam(value = "direction", required = false) String direction) {
-        
+
         if (sortBy == null || sortBy.trim().isEmpty()) {
             List<EmployeeResponse> employees = employeeService.getAllEmployees();
             return ResponseEntity.ok(employees);
         }
 
         String dbField = switch (sortBy) {
-            case "id" -> "employeeId";
-            case "name" -> "firstName";
-            case "email" -> "email";
-            case "department" -> "department";
-            default -> "employeeId";
+            case "id" ->
+                "employeeId";
+            case "name" ->
+                "firstName";
+            case "email" ->
+                "email";
+            case "department" ->
+                "department";
+            case "role" ->
+                "role";
+            default ->
+                "employeeId";
         };
 
         String dir = (direction != null) ? direction : "asc";

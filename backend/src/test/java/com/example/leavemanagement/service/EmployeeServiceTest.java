@@ -1,23 +1,43 @@
 package com.example.leavemanagement.service;
 
-import com.example.leavemanagement.dto.*;
-import com.example.leavemanagement.entity.Employee;
-import com.example.leavemanagement.exception.*;
-import com.example.leavemanagement.repository.EmployeeRepository;
 import java.time.LocalDateTime;
-import java.util.*;
-import org.junit.jupiter.api.*;
-import org.mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+
+import com.example.leavemanagement.config.JwtTokenProvider;
+import com.example.leavemanagement.dto.EmployeeRequest;
+import com.example.leavemanagement.dto.EmployeeResponse;
+import com.example.leavemanagement.dto.LoginRequest;
+import com.example.leavemanagement.entity.Employee;
+import com.example.leavemanagement.exception.BusinessException;
+import com.example.leavemanagement.exception.ResourceNotFoundException;
+import com.example.leavemanagement.repository.EmployeeRepository;
+import com.example.leavemanagement.util.PasswordUtil;
 
 class EmployeeServiceTest {
 
     @Mock
     private EmployeeRepository employeeRepository;
 
-    private final  JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
+    private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
 
     private EmployeeService employeeService;
 
@@ -30,9 +50,9 @@ class EmployeeServiceTest {
     @Test
     void createEmployee_Success() {
         EmployeeRequest request = new EmployeeRequest("Rahul", "Sharma", "rahul.sharma@example.com", "password", "Engineering");
-        
+
         when(employeeRepository.existsByEmail(anyString())).thenReturn(false);
-        
+
         Employee emp = new Employee();
         emp.setId(1L);
         emp.setFirstName("Rahul");
@@ -40,7 +60,7 @@ class EmployeeServiceTest {
         emp.setEmail("rahul.sharma@example.com");
         emp.setDepartment("Engineering");
         emp.setCreatedAt(LocalDateTime.now());
-        
+
         when(employeeRepository.save(any(Employee.class))).thenReturn(emp);
 
         EmployeeResponse response = employeeService.createEmployee(request);
@@ -55,7 +75,7 @@ class EmployeeServiceTest {
     @Test
     void createEmployee_DuplicateEmail_ThrowsBusinessException() {
         EmployeeRequest request = new EmployeeRequest("Rahul", "Sharma", "rahul.sharma@example.com", "password", "Engineering");
-        
+
         when(employeeRepository.existsByEmail("rahul.sharma@example.com")).thenReturn(true);
 
         BusinessException exception = assertThrows(BusinessException.class, () -> {
@@ -123,14 +143,14 @@ class EmployeeServiceTest {
 
     @Test
     void login_Success() {
-        com.example.leavemanagement.dto.LoginRequest loginReq = new com.example.leavemanagement.dto.LoginRequest("rahul.sharma@example.com", "password");
-        
+        LoginRequest loginReq = new LoginRequest("rahul.sharma@example.com", "password");
+
         Employee emp = new Employee();
         emp.setId(1L);
         emp.setFirstName("Rahul");
         emp.setLastName("Sharma");
         emp.setEmail("rahul.sharma@example.com");
-        emp.setPassword(com.example.leavemanagement.util.PasswordUtil.hashPassword("password"));
+        emp.setPassword(PasswordUtil.hashPassword("password"));
         emp.setDepartment("Engineering");
         emp.setRole("EMPLOYEE");
 
@@ -146,8 +166,8 @@ class EmployeeServiceTest {
 
     @Test
     void login_InvalidEmail_ThrowsBusinessException() {
-        com.example.leavemanagement.dto.LoginRequest loginReq = new com.example.leavemanagement.dto.LoginRequest("unknown@example.com", "password");
-        
+        LoginRequest loginReq = new LoginRequest("unknown@example.com", "password");
+
         when(employeeRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
 
         BusinessException exception = assertThrows(BusinessException.class, () -> {
@@ -159,12 +179,12 @@ class EmployeeServiceTest {
 
     @Test
     void login_WrongPassword_ThrowsBusinessException() {
-        com.example.leavemanagement.dto.LoginRequest loginReq = new com.example.leavemanagement.dto.LoginRequest("rahul.sharma@example.com", "wrongpassword");
-        
+        LoginRequest loginReq = new LoginRequest("rahul.sharma@example.com", "wrongpassword");
+
         Employee emp = new Employee();
         emp.setId(1L);
         emp.setEmail("rahul.sharma@example.com");
-        emp.setPassword(com.example.leavemanagement.util.PasswordUtil.hashPassword("password"));
+        emp.setPassword(PasswordUtil.hashPassword("password"));
 
         when(employeeRepository.findByEmail("rahul.sharma@example.com")).thenReturn(Optional.of(emp));
 
@@ -209,7 +229,7 @@ class EmployeeServiceTest {
         when(employeeRepository.existsByEmail("other@example.com")).thenReturn(true);
 
         EmployeeRequest updateReq = new EmployeeRequest("Rahul", "Sharma", "other@example.com", "", "Engineering", "EMPLOYEE");
-        
+
         BusinessException exception = assertThrows(BusinessException.class, () -> {
             employeeService.updateEmployee(1L, updateReq);
         });
