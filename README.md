@@ -1,2 +1,2 @@
-Rishi
+RISHI
 Sai Deepthi
